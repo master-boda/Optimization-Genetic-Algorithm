@@ -66,4 +66,4 @@ def fitness_function(route, geo_matrix):
 # Avaliar uma rota de exemplo usando a função de fitness
 example_route = ['D', 'G', 'QS', 'DV', 'RG', 'SN', 'KS', 'QG', 'CS', 'FC', 'D']
 route_fitness = fitness_function(example_route, geo_matrix_df)
-route_fitness
+print(route_fitness)
