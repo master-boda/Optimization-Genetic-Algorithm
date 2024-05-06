@@ -28,11 +28,12 @@ def fitness_function(route, geo_matrix):
 
 areas = ["D", "FC", "G", "QS", "QG", "CS", "KS", "RG", "DV", "SN"]
 
+
 def geo_matrix(labels, min_value=-500, max_value=500):
     """
     Creates a matrix with biased random values representing Geo gains or losses.
     Diagonal elements are set to zero, indicating no gain/loss within the same area.
-    The probability of a positive value is higher than a negative one.
+    The probability of a negative value is 7%.
 
     Parameters:
         labels (list): List of labels representing the areas.
@@ -43,18 +44,15 @@ def geo_matrix(labels, min_value=-500, max_value=500):
         pd.DataFrame: A pandas DataFrame representing the Geo matrix with labels.
     """
     size = len(labels)
-    matrix = np.zeros((size + 1, size + 1), dtype=object)
-
-    # Set labels for columns and rows
-    matrix[0, 1:] = labels
-    matrix[1:, 0] = labels
+    matrix = np.zeros((size, size), dtype=int)
 
     # Fill the matrix with biased random values
-    for i in range(1, size + 1):
-        for j in range(1, size + 1):
+    for i in range(size):
+        for j in range(size):
             if i == j:
                 matrix[i, j] = 0
             else:
-                matrix[i, j] = np.random.randint(0, max_value + 1) if np.random.rand() > 0.2 else np.random.randint(min_value, 0)
+                matrix[i, j] = np.random.randint(min_value, 0) if np.random.rand() < 0.07 else np.random.randint(1, max_value + 1)
 
-    return pd.DataFrame(matrix)
+    return pd.DataFrame(matrix, index=labels, columns=labels)
+print(geo_matrix(areas))
