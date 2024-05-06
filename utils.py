@@ -1,3 +1,6 @@
+import numpy as np 
+import pandas as pd
+
 def fitness_function(route, geo_matrix):
     """
     Calculate the total Geo (in-game currency) accumulated based on a given route.
@@ -21,3 +24,37 @@ def fitness_function(route, geo_matrix):
         to_area = route[i + 1]
         total_geo += geo_matrix.loc[from_area, to_area]
     return total_geo
+
+
+areas = ["D", "FC", "G", "QS", "QG", "CS", "KS", "RG", "DV", "SN"]
+
+def geo_matrix(labels, min_value=-500, max_value=500):
+    """
+    Creates a matrix with biased random values representing Geo gains or losses.
+    Diagonal elements are set to zero, indicating no gain/loss within the same area.
+    The probability of a positive value is higher than a negative one.
+
+    Parameters:
+        labels (list): List of labels representing the areas.
+        min_value (int): Minimum possible value for losses.
+        max_value (int): Maximum possible value for gains.
+
+    Returns:
+        pd.DataFrame: A pandas DataFrame representing the Geo matrix with labels.
+    """
+    size = len(labels)
+    matrix = np.zeros((size + 1, size + 1), dtype=object)
+
+    # Set labels for columns and rows
+    matrix[0, 1:] = labels
+    matrix[1:, 0] = labels
+
+    # Fill the matrix with biased random values
+    for i in range(1, size + 1):
+        for j in range(1, size + 1):
+            if i == j:
+                matrix[i, j] = 0
+            else:
+                matrix[i, j] = np.random.randint(0, max_value + 1) if np.random.rand() > 0.2 else np.random.randint(min_value, 0)
+
+    return pd.DataFrame(matrix)
