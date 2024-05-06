@@ -46,13 +46,12 @@ def geo_matrix(labels, min_value=-500, max_value=500):
     size = len(labels)
     matrix = np.zeros((size, size), dtype=int)
 
-    # Fill the matrix with biased random values
+
     for i in range(size):
         for j in range(size):
             if i == j:
                 matrix[i, j] = 0
             else:
-                matrix[i, j] = np.random.randint(min_value, 0) if np.random.rand() < 0.07 else np.random.randint(1, max_value + 1)
+                matrix[i, j] = np.random.randint(min_value, 0) if np.random.rand() < 0.07 else np.random.randint(1, max_value + 1) #sets up the 7% odd of being a negative number
 
     return pd.DataFrame(matrix, index=labels, columns=labels)
-print(geo_matrix(areas))
