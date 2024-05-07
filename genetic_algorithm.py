@@ -12,16 +12,18 @@ def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, 
     
     # initialize the population
     population = initializer(config.population_size)
-
+    
     # select the Geo matrix to use (original=True uses the original matrix from the project instructions)
     matrix = geo_matrix(original=og_matrix)
-    print(matrix.head(50))
     
     # compute fitness for each individual in the population
     fitnesses = [evaluator(ind, matrix) for ind in population]
     
     if verbose:
         print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
+        print(f'Population size: {config.population_size}')
+        print(f'Number of generations: {config.num_generations}')
+        print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix.head(15)}')
     
     for generation in range(config.num_generations):   
         
