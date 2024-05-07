@@ -7,16 +7,17 @@ from utils import fitness_function
 from operators import crossover
 from operators import mutate
 
-def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, og_matrix=False, maximize=True, verbose=True):
+def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, maximize=True, verbose=True):
     config = GAConfig()
     
-    # Initialize the population
+    # initialize the population
     population = initializer(config.population_size)
 
-    # Select the geo matrix to derive fitnesses from
-    matrix = geo_matrix(og_matrix)
+    # select the Geo matrix to use (original=True uses the original matrix from the project instructions)
+    matrix = geo_matrix(original=og_matrix)
+    print(matrix.head(50))
     
-    # Precompute fitnesses
+    # compute fitness for each individual in the population
     fitnesses = [evaluator(ind, matrix) for ind in population]
     
     if verbose:
@@ -25,7 +26,7 @@ def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, og
     for generation in range(config.num_generations):   
         
         if config.elitism:
-            # Keep the best individuals
+            # select the individuals to be carried over to the next generation
             sorted_indices = np.argsort(fitnesses)
             sorted_indices = sorted_indices if maximize else sorted_indices[::-1]
             
@@ -67,5 +68,3 @@ def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, og
 # crossover:    crossover(p1, p2) -> c1, c2, ect.
 # mutation:     mutate(individual) -> individual
 # selection:    selection(population, fitnesses)
-
-Genetic_Algorithm(population, fitness_function, crossover, mutate, SELECTOR, og_matrix=True, maximize=True, verbose=True)
