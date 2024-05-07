@@ -14,7 +14,7 @@ geo_matrix (DataFrame): A DataFrame where indices and columns represent areas, a
 Returns:
 int: The total Geo accumulated along the route.
     """
-
+    
     total_geo = 0
     for i in range(len(route) - 1):
         from_area = route[i]
