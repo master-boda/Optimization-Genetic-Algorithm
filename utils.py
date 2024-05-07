@@ -31,15 +31,15 @@ def geo_matrix(min_value=-500, max_value=500, original=False):
     Creates a matrix with biased random values representing Geo gains or losses.
     Diagonal elements are set to zero, indicating no gain/loss within the same area.
     The probability of a negative value is 7%, because in the matrix given in the project instructions 
-    there was 7 negative values in a total of 100 values. 
+    there were 7 negative values in a total of 100 values. 
 
     Parameters:
-        labels (list): List of labels representing the areas.
         min_value (int): Minimum possible value for losses.
         max_value (int): Maximum possible value for gains.
+        original (bool): Whether to return the original matrix.
 
     Returns:
-        pd.DataFrame: A pandas DataFrame representing the Geo matrix with labels.
+        pd.DataFrame: A pandas DataFrame representing the Geo matrix.
     """
     df_original = pd.read_csv('Geo_Matrix_Dataset.csv', index_col='From/To')
     labels = df_original.index.tolist()
@@ -50,12 +50,17 @@ def geo_matrix(min_value=-500, max_value=500, original=False):
     size = len(labels)
     matrix = np.zeros((size, size), dtype=int)
 
-
     for i in range(size):
         for j in range(size):
             if i == j:
                 matrix[i, j] = 0
             else:
-                matrix[i, j] = np.random.randint(min_value, 0) if np.random.rand() < 0.07 else np.random.randint(1, max_value + 1) #sets up the 7% odd of being a negative number
+                if np.random.rand() < 0.07:
+                    if min_value < 0:  # Check if min_value is negative
+                        matrix[i, j] = np.random.randint(min_value, 0)
+                    else:
+                        matrix[i, j] = 0
+                else:
+                    matrix[i, j] = np.random.randint(1, max_value + 1)
 
     return pd.DataFrame(matrix, index=labels, columns=labels)

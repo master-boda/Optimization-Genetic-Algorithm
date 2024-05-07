@@ -2,15 +2,14 @@ import random
 import numpy as np
 from config import GAConfig
 from utils import geo_matrix
+from population import population
+from utils import fitness_function
+from operators import crossover
+from operators import mutate
 
-# expected parameters:
-# initializer:  population(number)
-# evaluator:    fitness_function(route, geo_matrix)
-# crossover:    crossover(p1, p2) -> c1, c2, ect.
-# mutation:     mutate(individual) -> individual
-# selection:    selection(population, fitnesses)
-
-def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, config=GAConfig, og_matrix=False, maximize=True, verbose=True):
+def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, og_matrix=False, maximize=True, verbose=True):
+    config = GAConfig()
+    
     # Initialize the population
     population = initializer(config.population_size)
 
@@ -52,11 +51,21 @@ def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, co
             
             offspring.extend([c1, c2])
             
-        offspring = offspring[:config.population_size]
-        population = offspring
+        population = offspring[:config.population_size]
         fitnesses = [evaluator(ind, matrix) for ind in population]
-        
-        current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
-        print(f'Generation {generation} best fitness: {current_best_fitness}')
+                
+        if verbose:
+            current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
+            print(f'Generation {generation} best fitness: {current_best_fitness}')
             
     return population[np.argmin(fitnesses)], min(fitnesses)
+
+
+# expected parameters:
+# initializer:  population(number)
+# evaluator:    fitness_function(route, geo_matrix)
+# crossover:    crossover(p1, p2) -> c1, c2, ect.
+# mutation:     mutate(individual) -> individual
+# selection:    selection(population, fitnesses)
+
+Genetic_Algorithm(population, fitness_function, crossover, mutate, SELECTOR, og_matrix=True, maximize=True, verbose=True)
