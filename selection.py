@@ -1,3 +1,5 @@
+import random
+
 def tournament_selection(population, fitness_func, tournament_size=3):
     """ Seleciona um indivíduo utilizando seleção por torneio. """
     tournament = random.sample(population, tournament_size)

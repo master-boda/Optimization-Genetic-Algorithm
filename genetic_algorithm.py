@@ -1,21 +1,38 @@
 import random
 import numpy as np
 from config import GAConfig
+from utils import geo_matrix
 
-def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, config: GAConfig, maximize=True, verbose=True):
+# expected parameters:
+# initializer:  population(number)
+# evaluator:    fitness_function(route, geo_matrix)
+# crossover:    crossover(p1, p2) -> c1, c2, ect.
+# mutation:     mutate(individual) -> individual
+# selection:    selection(population, fitnesses)
+
+def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, config=GAConfig, og_matrix=False, maximize=True, verbose=True):
     # Initialize the population
     population = initializer(config.population_size)
 
+    # Select the geo matrix to derive fitnesses from
+    matrix = geo_matrix(og_matrix)
+    
     # Precompute fitnesses
-    fitnesses = [evaluator(ind) for ind in population]
+    fitnesses = [evaluator(ind, matrix) for ind in population]
     
     if verbose:
-        print(f'Initial best fitness: {max(fitnesses)}') 
+        print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
+    
+    for generation in range(config.num_generations):   
         
-    for generation in range(config.generations):   
         if config.elitism:
             # Keep the best individuals
-            elite = [population[i] for i in np.argsort(fitnesses)[-config.elitism_size:]]
+            sorted_indices = np.argsort(fitnesses)
+            sorted_indices = sorted_indices if maximize else sorted_indices[::-1]
+            
+            elite_indices = sorted_indices[-config.elitism_size:]
+            
+            offspring = [population[i] for i in elite_indices]
             
         else :
             offspring = []
@@ -36,16 +53,10 @@ def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, co
             offspring.extend([c1, c2])
             
         offspring = offspring[:config.population_size]
+        population = offspring
+        fitnesses = [evaluator(ind, matrix) for ind in population]
         
-        population = elite + offspring 
-        fitness = evaluator(population)
-        
-        if verbose:
-            print(f'Generation {generation} best fitness: {max(fitness)}')
+        current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
+        print(f'Generation {generation} best fitness: {current_best_fitness}')
             
-        return population[np.argmin(fitnesses)], min(fitnesses)
-                
-            
-        
-    
-    
+    return population[np.argmin(fitnesses)], min(fitnesses)

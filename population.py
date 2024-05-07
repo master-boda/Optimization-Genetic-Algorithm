@@ -1,5 +1,5 @@
 import random
-def generate_individual(areas):
+def generate_individual():
     """
     Generate a valid game route starting and ending at 'Dirtmouth' ('D') based on provided areas.
     Applies specific game rules to order areas optimally for the route.
@@ -10,6 +10,9 @@ def generate_individual(areas):
     Returns:
     list: A list representing a valid route starting and ending at 'Dirtmouth'.
     """
+    # Define the areas in the game
+    areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN', 'QS']
+
     # Initialize the route starting at 'Dirtmouth'
     route = ['D']
     
@@ -44,9 +47,6 @@ def generate_individual(areas):
     
     return route
 
-# Define the areas available in the game
-areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN', 'QS']
-
 def population(number):
     """
     Generate a population of individual game routes, each represented as a list.
@@ -58,6 +58,6 @@ def population(number):
     list: A list of generated individual game routes.
     """
     # Generate 'number' of individuals using list comprehension
-    population = [generate_individual(areas) for _ in range(number)]
+    population = [generate_individual() for _ in range(number)]
     
     return population
