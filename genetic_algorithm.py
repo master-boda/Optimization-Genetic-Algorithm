@@ -1,66 +1,62 @@
 import random
+import numpy as np
+from config import GAConfig
+from utils import geo_matrix
 
-def generate_individual(areas):
-    """
-    Generate a valid game route starting and ending at 'Dirtmouth' ('D') based on provided areas.
-    Applies specific game rules to order areas optimally for the route.
-    
-    Parameters:
-    areas (list): List of area identifiers including 'D' for 'Dirtmouth'.
-    
-    Returns:
-    list: A list representing a valid route starting and ending at 'Dirtmouth'.
-    """
-    # Initialize the route starting at 'Dirtmouth'
-    route = ['D']
-    
-    # Exclude 'Dirtmouth' for route generation
-    possible_areas = areas[:]
-    possible_areas.remove('D')
-    
-    # Randomize area order
-    random.shuffle(possible_areas)
-    
-    # Ensure 'DV' follows 'QS' immediately, if both are present
-    if 'QS' in possible_areas and 'DV' in possible_areas:
-        qs_index = possible_areas.index('QS')
-        dv_index = possible_areas.index('DV')
-        if abs(qs_index - dv_index) > 1:
-            possible_areas.remove('DV')
-            possible_areas.insert(qs_index + 1, 'DV')
-    
-    # Ensure 'CS' does not immediately follow 'QG'
-    if 'QG' in possible_areas and 'CS' in possible_areas:
-        qg_index = possible_areas.index('QG')
-        cs_index = possible_areas.index('CS')
-        if abs(qg_index - cs_index) == 1:
-            for i, area in enumerate(possible_areas):
-                if area not in ['CS', 'QG'] and i != qg_index + 1:
-                    possible_areas[i], possible_areas[cs_index] = possible_areas[cs_index], possible_areas[i]
-                    break
-    
-    # Finalize the route
-    route.extend(possible_areas)
-    route.append('D')  # End at 'Dirtmouth'
-    
-    return route
+# expected parameters:
+# initializer:  population(number)
+# evaluator:    fitness_function(route, geo_matrix)
+# crossover:    crossover(p1, p2) -> c1, c2, ect.
+# mutation:     mutate(individual) -> individual
+# selection:    selection(population, fitnesses)
 
-# Define the areas available in the game
-areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN', 'QS']
+def Genetic_Algorithm(initializer, evaluator, crossover, mutation, selection, config=GAConfig, og_matrix=False, maximize=True, verbose=True):
+    # Initialize the population
+    population = initializer(config.population_size)
 
-def population(number):
-    """
-    Generate a population of individual game routes, each represented as a list.
-
-    Parameters:
-    number (int): The number of individual routes to generate.
-
-    Returns:
-    list: A list of generated individual game routes.
-    """
-    # Generate 'number' of individuals using list comprehension
-    population = [generate_individual(areas) for _ in range(number)]
+    # Select the geo matrix to derive fitnesses from
+    matrix = geo_matrix(og_matrix)
     
-    return population
-
-
+    # Precompute fitnesses
+    fitnesses = [evaluator(ind, matrix) for ind in population]
+    
+    if verbose:
+        print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
+    
+    for generation in range(config.num_generations):   
+        
+        if config.elitism:
+            # Keep the best individuals
+            sorted_indices = np.argsort(fitnesses)
+            sorted_indices = sorted_indices if maximize else sorted_indices[::-1]
+            
+            elite_indices = sorted_indices[-config.elitism_size:]
+            
+            offspring = [population[i] for i in elite_indices]
+            
+        else :
+            offspring = []
+            
+        while len(offspring) < config.population_size:
+            
+            p1 = selection(population, fitnesses)
+            p2 = selection(population, fitnesses)
+            
+            if random.random() < config.crossover_rate:
+                c1, c2 = crossover(p1, p2)
+            else:
+                c1, c2 = p1, p2
+                
+            c1 = mutation(c1, config.mutation_rate)
+            c2 = mutation(c2, config.mutation_rate)
+            
+            offspring.extend([c1, c2])
+            
+        offspring = offspring[:config.population_size]
+        population = offspring
+        fitnesses = [evaluator(ind, matrix) for ind in population]
+        
+        current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
+        print(f'Generation {generation} best fitness: {current_best_fitness}')
+            
+    return population[np.argmin(fitnesses)], min(fitnesses)

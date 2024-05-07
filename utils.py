@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 import pandas as pd
 
 def fitness_function(route, geo_matrix):
