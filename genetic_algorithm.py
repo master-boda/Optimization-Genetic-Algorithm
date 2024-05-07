@@ -2,10 +2,8 @@ import random
 import numpy as np
 from config import GAConfig
 from utils import geo_matrix
-from population import population
 from utils import fitness_function
-from operators import crossover
-from operators import mutate
+from population import population
 
 def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, maximize=True, verbose=True):
     config = GAConfig()
