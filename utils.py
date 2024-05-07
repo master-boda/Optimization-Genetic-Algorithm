@@ -33,7 +33,8 @@ def geo_matrix(labels, min_value=-500, max_value=500):
     """
     Creates a matrix with biased random values representing Geo gains or losses.
     Diagonal elements are set to zero, indicating no gain/loss within the same area.
-    The probability of a negative value is 7%.
+    The probability of a negative value is 7%, because in the matrix given in the project instructions 
+    there was 7 negative values in a total of 100 values. 
 
     Parameters:
         labels (list): List of labels representing the areas.
@@ -55,3 +56,4 @@ def geo_matrix(labels, min_value=-500, max_value=500):
                 matrix[i, j] = np.random.randint(min_value, 0) if np.random.rand() < 0.07 else np.random.randint(1, max_value + 1) #sets up the 7% odd of being a negative number
 
     return pd.DataFrame(matrix, index=labels, columns=labels)
+
