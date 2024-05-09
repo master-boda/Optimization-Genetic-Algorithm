@@ -21,14 +21,16 @@ def generate_individual():
     
     # Randomize area order
     random.shuffle(possible_areas)
-    
+
     # Enforce 'DV' follows 'QS' immediately
     if 'QS' in possible_areas and 'DV' in possible_areas:
         qs_index = possible_areas.index('QS')
         dv_index = possible_areas.index('DV')
-        if abs(qs_index - dv_index) > 1:
-            possible_areas.remove('DV')
-            possible_areas.insert(qs_index + 1, 'DV')
+        # Check if 'DV' is right after 'QS'
+        if dv_index == qs_index + 1:
+            # If 'DV' is right after 'QS', remove 'KS' if it exists
+            if 'KS' in possible_areas:
+                possible_areas.remove('KS')
     
     # Prevent 'CS' from immediately following 'QG'
     if 'QG' in possible_areas and 'CS' in possible_areas:
