@@ -15,7 +15,7 @@ class GAConfig:
         self.num_generations = num_generations
         self.mutation_rate = mutation_rate
         self.crossover_rate = crossover_rate
-        self.elitism = elitism
+        self.elitism = elitism #nao faz sentido, devia era ser parametro para trocarmos pa true ou false, n devoa tar aqui
         self.elitism_size = elitism_size
 
     def __repr__(self):
