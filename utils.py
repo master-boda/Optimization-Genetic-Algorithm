@@ -22,7 +22,11 @@ int: The total Geo accumulated along the route.
         total_geo += geo_matrix.loc[from_area, to_area]
     return total_geo
 
-def geo_matrix(min_value=-500, max_value=500, original=False):
+
+areas = ["D", "FC", "G", "QS", "QG", "CS", "KS", "RG", "DV", "SN"]
+
+
+def geo_matrix(labels, min_value=-500, max_value=500):
     """
     If original is True, returns the original Geo matrix given in the Project Description.
     Creates a matrix with biased random values representing Geo gains or losses.
@@ -65,3 +69,4 @@ def geo_matrix(min_value=-500, max_value=500, original=False):
                     matrix[i, j] = np.random.randint(1, max_value + 1)
 
     return pd.DataFrame(matrix, index=labels, columns=labels)
+
