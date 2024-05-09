@@ -10,20 +10,19 @@ def generate_individual():
     Returns:
     list: A list representing a valid route starting and ending at 'Dirtmouth'.
     """
-    # define the areas in the game
+    # Define the areas in the game
     areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN', 'QS']
 
-    # initialize the route starting at 'Dirtmouth'
+    # Initialize the route starting at 'Dirtmouth'
     route = ['D']
     
-    # exclude 'Dirtmouth' for route generation
-    possible_areas = areas[:]
-    possible_areas.remove('D')
+    # Exclude 'Dirtmouth' and 'Resting Grounds' for route generation
+    possible_areas = [area for area in areas if area not in ['D', 'RG']]
     
-    # randomize area order
+    # Randomize area order
     random.shuffle(possible_areas)
     
-    # make sure 'DV' follows 'QS' immediately, if both are present
+    # Enforce 'DV' follows 'QS' immediately
     if 'QS' in possible_areas and 'DV' in possible_areas:
         qs_index = possible_areas.index('QS')
         dv_index = possible_areas.index('DV')
@@ -31,7 +30,7 @@ def generate_individual():
             possible_areas.remove('DV')
             possible_areas.insert(qs_index + 1, 'DV')
     
-    # make sure 'CS' does not immediately follow 'QG'
+    # Prevent 'CS' from immediately following 'QG'
     if 'QG' in possible_areas and 'CS' in possible_areas:
         qg_index = possible_areas.index('QG')
         cs_index = possible_areas.index('CS')
@@ -40,12 +39,17 @@ def generate_individual():
                 if area not in ['CS', 'QG'] and i != qg_index + 1:
                     possible_areas[i], possible_areas[cs_index] = possible_areas[cs_index], possible_areas[i]
                     break
+
+    # Determine the halfway point to add 'RG'
+    half_point = len(possible_areas) // 2
+    possible_areas.insert(half_point, 'RG')
     
-    # finalize the route
+    # Finalize the route
     route.extend(possible_areas)
-    route.append('D')  # end at 'Dirtmouth'
+    route.append('D')  # End at 'Dirtmouth'
     
     return route
+
 
 def population(n):
     """
