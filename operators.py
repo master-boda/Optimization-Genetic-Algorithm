@@ -1,31 +1,14 @@
 import random
 
-def order_crossover(parent1, parent2):
-    size = len(parent1)
-    idx1, idx2 = sorted(random.sample(range(size), 2))
-    child = [None]*size
-
-    # Copy a slice from first parent:
-    child[idx1:idx2+1] = parent1[idx1:idx2+1]
-
-    # Fill from second parent:
-    p2idx = (idx2 + 1) % size  # Start right after the slice in parent2
-    cidx = (idx2 + 1) % size   # Start right after the slice in child
-    while None in child:
-        if parent2[p2idx] not in child:
-            child[cidx] = parent2[p2idx]
-            cidx = (cidx + 1) % size
-        p2idx = (p2idx + 1) % size
-
-    return child
-
 def partially_mapped_crossover(parent1, parent2):
     size = len(parent1)
-    idx1, idx2 = sorted(random.sample(range(size), 2))
-    child = [None]*size
-    
-    # Initialize children with None
+    # Exclude the first and the last index from sampling
+    idx1, idx2 = sorted(random.sample(range(1, size-1), 2))
     child1, child2 = [None]*size, [None]*size
+
+    # Preserve the first and last elements
+    child1[0], child1[-1] = parent1[0], parent1[-1]
+    child2[0], child2[-1] = parent2[0], parent2[-1]
 
     # Copy the crossover segments
     child1[idx1:idx2+1] = parent2[idx1:idx2+1]
@@ -54,23 +37,65 @@ def partially_mapped_crossover(parent1, parent2):
     
     return child1, child2
 
+
+def order_crossover(parent1, parent2):
+    size = len(parent1)
+    # Exclude the first and the last index from sampling
+    idx1, idx2 = sorted(random.sample(range(1, size-1), 2))
+    child = [None]*size
+
+    # Copy the endpoints
+    child[0], child[-1] = parent1[0], parent1[-1]
+
+    # Copy a slice from first parent:
+    child[idx1:idx2+1] = parent1[idx1:idx2+1]
+
+    # Fill from second parent:
+    p2idx = (idx2 + 1) % size
+    cidx = (idx2 + 1) % size
+    while None in child:
+        if parent2[p2idx] not in child:
+            child[cidx] = parent2[p2idx]
+            cidx = (cidx + 1) % size
+        p2idx = (p2idx + 1) % size
+
+    return child
+
+
 def cycle_crossover(parent1, parent2):
     size = len(parent1)
     child1, child2 = [None]*size, [None]*size
     cycle = 0
-    used_indices = set()
     
-    while None in child1:
+    # Start the cycles avoiding the first and last element
+    while None in child1[1:-1]:  # Only consider inner elements for cycles
         if cycle % 2 == 0:  # Copy cycle from parent1 to child1, parent2 to child2
-            start = child1.index(None)
+            start = next(i for i, x in enumerate(child1[1:-1], 1) if x is None)
             index = start
             while True:
                 child1[index] = parent1[index]
                 child2[index] = parent2[index]
-                used_indices.add(index)
                 index = parent1.index(parent2[index])
                 if index == start:
                     break
         cycle += 1
 
+    # Ensure the first and last elements are copied directly
+    child1[0], child1[-1] = parent1[0], parent1[-1]
+    child2[0], child2[-1] = parent2[0], parent2[-1]
+
     return child1, child2
+
+def simple_mutation(individual, config):
+    # Check if mutation occurs based on the mutation rate
+    if random.random() < config.mutation_rate:
+        size = len(individual)
+        
+        # Generate two random indices between 1 and len(individual)-2
+        # to exclude the first and last elements from swapping
+        idx1, idx2 = random.sample(range(1, size-1), 2)
+        
+        # Perform the swap
+        individual[idx1], individual[idx2] = individual[idx2], individual[idx1]
+    
+    return individual

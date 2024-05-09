@@ -5,8 +5,9 @@ from utils import geo_matrix
 from utils import fitness_function
 from population import population
 
-def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, maximize=True, verbose=True):
+def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, maximize=True, verbose=True, elitism=True):
     config = GAConfig()
+    
     # initialize the population
     population = initializer(config.population_size)
     
@@ -22,9 +23,8 @@ def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, 
         print(f'Number of generations: {config.num_generations}')
         print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix.head(15)}')
     
-    for generation in range(config.num_generations):   
-        
-        if config.elitism:
+    for generation in range(config.num_generations):    
+        if elitism:
             # select the individuals to be carried over to the next generation
             sorted_indices = np.argsort(fitnesses)
             sorted_indices = sorted_indices if maximize else sorted_indices[::-1]
@@ -32,7 +32,7 @@ def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, 
             elite_indices = sorted_indices[-config.elitism_size:]
             
             offspring = [population[i] for i in elite_indices]
-            
+
         else :
             offspring = []
             
@@ -46,8 +46,8 @@ def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, 
             else:
                 c1, c2 = p1, p2
                 
-            c1 = mutation(c1, config.mutation_rate)
-            c2 = mutation(c2, config.mutation_rate)
+            #c1 = mutation(c1, config.mutation_rate)
+            #c2 = mutation(c2, config.mutation_rate)
             
             offspring.extend([c1, c2])
             
@@ -67,3 +67,9 @@ def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, 
 # crossover:    crossover(p1, p2) -> c1, c2, ect.
 # mutation:     mutate(individual) -> individual
 # selection:    selection(population, fitnesses)
+
+from selection_algorithms import *
+from operators import partially_mapped_crossover
+from operators import simple_mutation
+
+ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation, False, True, True, True)
