@@ -7,7 +7,6 @@ from population import population
 
 def ga(initializer, evaluator, selection, crossover, mutation, og_matrix=False, maximize=True, verbose=True):
     config = GAConfig()
-    
     # initialize the population
     population = initializer(config.population_size)
     
