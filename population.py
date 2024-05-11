@@ -10,29 +10,28 @@ def generate_individual():
     Returns:
     list: A list representing a valid route starting and ending at 'Dirtmouth'.
     """
-    # Define the areas in the game
+    # define the areas in the game
     areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN', 'QS']
 
-    # Initialize the route starting at 'Dirtmouth'
+    # initialize the route starting at 'Dirtmouth'
     route = ['D']
     
-    # Exclude 'Dirtmouth' and 'Resting Grounds' for route generation
+    # exclude 'Dirtmouth' and 'Resting Grounds' for route generation
     possible_areas = [area for area in areas if area not in ['D', 'RG']]
     
-    # Randomize area order
     random.shuffle(possible_areas)
 
-    # Enforce 'DV' follows 'QS' immediately
+    # enforce 'DV' follows 'QS' immediately
     if 'QS' in possible_areas and 'DV' in possible_areas:
         qs_index = possible_areas.index('QS')
         dv_index = possible_areas.index('DV')
-        # Check if 'DV' is right after 'QS'
+        # check if 'DV' is right after 'QS'
         if dv_index == qs_index + 1:
-            # If 'DV' is right after 'QS', remove 'KS' if it exists
+            # if 'DV' is right after 'QS', remove 'KS' if it exists
             if 'KS' in possible_areas:
                 possible_areas.remove('KS')
     
-    # Prevent 'CS' from immediately following 'QG'
+    # prevent 'CS' from immediately following 'QG'
     if 'QG' in possible_areas and 'CS' in possible_areas:
         qg_index = possible_areas.index('QG')
         cs_index = possible_areas.index('CS')
@@ -42,13 +41,12 @@ def generate_individual():
                     possible_areas[i], possible_areas[cs_index] = possible_areas[cs_index], possible_areas[i]
                     break
 
-    # Determine the halfway point to add 'RG'
+    # determine the halfway point to add 'RG'
     half_point = len(possible_areas) // 2
     possible_areas.insert(half_point, 'RG')
     
-    # Finalize the route
     route.extend(possible_areas)
-    route.append('D')  # End at 'Dirtmouth'
+    route.append('D')  # end at 'Dirtmouth'
     
     return route
 
