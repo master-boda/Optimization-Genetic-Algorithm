@@ -23,8 +23,6 @@ int: The total Geo accumulated along the route.
     return total_geo
 
 
-areas = ["D", "FC", "G", "QS", "QG", "CS", "KS", "RG", "DV", "SN"]
-
 def geo_matrix(min_value=-500, max_value=500, original=False):
     """
     If original is True, returns the original Geo matrix given in the Project Description.

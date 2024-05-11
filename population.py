@@ -1,49 +1,30 @@
 import random
+
 def generate_individual():
     """
-    Generate a valid game route starting and ending at 'Dirtmouth' ('D') based on provided areas.
-    Applies route ordering rules included in the Project Description.
-    
-    Parameters:
-    areas (list): List of area identifiers including 'D' for 'Dirtmouth'.
+    Generate a game route starting and ending at 'Dirtmouth' ('D') without strict sequence rules,
+    with 'Resting Grounds' ('RG') inserted at a random position in the second half of the route.
     
     Returns:
-    list: A list representing a valid route starting and ending at 'Dirtmouth'.
+    list: A list representing a route starting and ending at 'Dirtmouth'.
     """
     # define the areas in the game
-    areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN', 'QS']
+    areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS']
 
     # initialize the route starting at 'Dirtmouth'
     route = ['D']
     
-    # exclude 'Dirtmouth' and 'Resting Grounds' for route generation
-    possible_areas = [area for area in areas if area not in ['D', 'RG']]
+    # exclude 'Dirtmouth' for route generation
+    possible_areas = [area for area in areas if area != 'D']
     
+    # randomize the order of areas
     random.shuffle(possible_areas)
 
-    # enforce 'DV' follows 'QS' immediately
-    if 'QS' in possible_areas and 'DV' in possible_areas:
-        qs_index = possible_areas.index('QS')
-        dv_index = possible_areas.index('DV')
-        # check if 'DV' is right after 'QS'
-        if dv_index == qs_index + 1:
-            # if 'DV' is right after 'QS', remove 'KS' if it exists
-            if 'KS' in possible_areas:
-                possible_areas.remove('KS')
-    
-    # prevent 'CS' from immediately following 'QG'
-    if 'QG' in possible_areas and 'CS' in possible_areas:
-        qg_index = possible_areas.index('QG')
-        cs_index = possible_areas.index('CS')
-        if abs(qg_index - cs_index) == 1:
-            for i, area in enumerate(possible_areas):
-                if area not in ['CS', 'QG'] and i != qg_index + 1:
-                    possible_areas[i], possible_areas[cs_index] = possible_areas[cs_index], possible_areas[i]
-                    break
-
-    # determine the halfway point to add 'RG'
+    # determine the start index for 'RG' to be placed in the second half of the route
     half_point = len(possible_areas) // 2
-    possible_areas.insert(half_point, 'RG')
+    # choose a random index from the second half of the list
+    rg_index = random.randint(half_point, len(possible_areas))
+    possible_areas.insert(rg_index, 'RG')
     
     route.extend(possible_areas)
     route.append('D')  # end at 'Dirtmouth'
@@ -65,3 +46,5 @@ def population(n):
     population = [generate_individual() for _ in range(n)]
     
     return population
+
+print(generate_individual())

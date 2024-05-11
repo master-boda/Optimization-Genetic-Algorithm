@@ -1,16 +1,5 @@
 import random
 
-def correct_forbidden_sequences(child):
-    size = len(child)
-    forbidden_sequences = [("Q", "G"), ("C", "S"), ("Q", "S"), ("D", "V")]
-    for i in range(size - 1):
-        if (child[i], child[i+1]) in forbidden_sequences:
-            # swap with a non-sequence forming element
-            # ensures we do not with Dirtmouth
-            if i > 0:  # swap with previous if not the first element
-                child[i], child[i-1] = child[i-1], child[i]
-            elif i < size - 2:  # swap with next if not near the last element
-                child[i+1], child[i+2] = child[i+2], child[i+1]
 
 def partially_mapped_crossover(parent1, parent2):
     size = len(parent1)
@@ -33,9 +22,6 @@ def partially_mapped_crossover(parent1, parent2):
 
     apply_mapping(child1, mapping1)
     apply_mapping(child2, mapping2)
-
-    correct_forbidden_sequences(child1)
-    correct_forbidden_sequences(child2)
     
     return child1, child2
 
@@ -49,7 +35,5 @@ def simple_mutation(individual, config):
         idx1, idx2 = random.sample(range(1, size-1), 2)
         
         individual[idx1], individual[idx2] = individual[idx2], individual[idx1]
-    
-        correct_forbidden_sequences(individual)
 
     return individual
