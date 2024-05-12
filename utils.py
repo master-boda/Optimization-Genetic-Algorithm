@@ -3,24 +3,39 @@ import pandas as pd
 
 def fitness_function(route, geo_matrix):
     """
-Calculates the total accumulated Geo for a given route.
-Sums the Geo gains or losses when traveling from one area to another along the route.
-Geo values are obtained from a Geo matrix.
+    Calculates the total accumulated Geo for a given route.
+    Sums the Geo gains or losses when traveling from one area to another along the route.
+    Geo values are obtained from a Geo matrix.
 
-Parameters:
-route (list of str): The route taken, represented by letters representing areas in the game.
-geo_matrix (DataFrame): A DataFrame where indices and columns represent areas, and values indicate Geo changes between areas.
+    Parameters:
+    route (list of str): The route taken, represented by letters representing areas in the game.
+    geo_matrix (DataFrame): A DataFrame where indices and columns represent areas, and values indicate Geo changes between areas.
 
-Returns:
-int: The total Geo accumulated along the route.
+    Returns:
+    int: The total Geo accumulated along the route.
     """
-    
+
     total_geo = 0
+    total_geo_without_ks = 0
+    skip_ks = False
+
     for i in range(len(route) - 1):
         from_area = route[i]
         to_area = route[i + 1]
+
+        if skip_ks:
+            skip_ks = False
+            continue
+
+        if from_area == "QS" and to_area == "DV":
+            skip_ks = True
+            total_geo_without_ks += geo_matrix.loc[route[i-1], to_area]
+        else:
+            total_geo_without_ks += geo_matrix.loc[from_area, to_area]
+
         total_geo += geo_matrix.loc[from_area, to_area]
-    return total_geo
+
+    return max(total_geo, total_geo_without_ks)
 
 
 def geo_matrix(min_value=-500, max_value=500, original=False):
