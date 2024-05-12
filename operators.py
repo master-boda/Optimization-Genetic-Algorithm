@@ -38,14 +38,15 @@ def simple_mutation(individual, config):
 
     return individual
 
+
 def FOMX_Crossover(parent1, parent2):
+    size = len(parent1)
     # Select two random crossover points
-    cut_point1 = random.randint(1, len(parent1) - 2)
-    cut_point2 = random.randint(cut_point1 + 1, len(parent1) - 1)
+    cut_point1, cut_point2 = sorted(random.sample(range(1, size-1), 2))
 
     # Initialize offspring with null values
-    offspring1 = [None] * len(parent1)
-    offspring2 = [None] * len(parent2)
+    offspring1 = [None] * size
+    offspring2 = [None] * size
 
     # Copy the segments between cut points from each parent to the other offspring
     for i in range(cut_point1, cut_point2 + 1):
@@ -53,29 +54,35 @@ def FOMX_Crossover(parent1, parent2):
         offspring2[i] = parent1[i]
 
     # Initialize mapping dictionaries to track duplications
-    map1 = {}
-    map2 = {}
+    map1 = {parent2[i]: parent1[i] for i in range(cut_point1, cut_point2 + 1)}
+    map2 = {parent1[i]: parent2[i] for i in range(cut_point1, cut_point2 + 1)}
 
-    # Populate mapping from parent segments
-    for i in range(cut_point1, cut_point2 + 1):
-        map1[parent2[i]] = parent1[i]
-        map2[parent1[i]] = parent2[i]
-
-    # Fill in the rest of the offspring
-    def FillOffspring(offspring, parent, mapping):
+    # Fill the rest of the offspring, avoiding duplicates
+    def fill_offspring(offspring, parent, map):
         j = 0
-        for gene in parent:
-            if cut_point1 <= j < cut_point2:
-                j += 1
+        for i in range(size):
+            if cut_point1 <= i <= cut_point2:
                 continue
-            while gene in mapping and j < len(offspring):
-                gene = mapping[gene]
-            if j < len(offspring):
-                offspring[j] = gene
-                j += 1
+            gene = parent[i]
+            original_gene = gene
+            seen = set()
+            while gene in map:
+                if gene in seen or gene == offspring[j]:  # Detect cycle or already placed gene
+                    gene = None  # Break the cycle, place None temporarily
+                    break
+                seen.add(gene)
+                gene = map[gene]
 
-    # Fill both offspring using the mapping function
-    FillOffspring(offspring1, parent1, map2)
-    FillOffspring(offspring2, parent2, map1)
+            while offspring[j] is not None:
+                j += 1  # Find the next available spot
+            offspring[j] = gene if gene is not None else original_gene  # Place the gene or the original if unresolved
+
+    # Fill both offspring using the helper function
+    fill_offspring(offspring1, parent1, map2)
+    fill_offspring(offspring2, parent2, map1)
+
+    # Set first and last elements if not already set (for path integrity in some problems)
+    offspring1[0], offspring1[-1] = parent1[0], parent1[-1]
+    offspring2[0], offspring2[-1] = parent2[0], parent2[-1]
 
     return offspring1, offspring2
