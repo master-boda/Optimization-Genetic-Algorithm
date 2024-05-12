@@ -86,3 +86,36 @@ def FOMX_Crossover(parent1, parent2):
     offspring2[0], offspring2[-1] = parent2[0], parent2[-1]
 
     return offspring1, offspring2
+
+def Ordered_crossover(parent1, parent2):
+    size = len(parent1)
+    cut_point1, cut_point2 = sorted(random.sample(range(1, size-1), 2))
+    
+    offspring1 = [None] * size
+    offspring2 = [None] * size
+    
+    for i in range(cut_point1, cut_point2 + 1):
+        offspring1[i] = parent1[i]
+        offspring2[i] = parent2[i]
+        
+    # Fill the rest of the offspring 
+    def fill_offspring(offspring, parent):
+        j = 0
+        for i in range(size):
+            if cut_point1 <= i <= cut_point2:
+                continue
+            gene = parent[i]
+            if gene not in offspring:
+                while offspring[j] is not None:
+                    j += 1
+                offspring[j] = gene
+    
+    fill_offspring(offspring1, parent1) 
+    fill_offspring(offspring2, parent2)
+    
+    return offspring1, offspring2
+    
+    
+    
+    
+    
