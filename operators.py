@@ -37,3 +37,48 @@ def simple_mutation(individual, config):
         individual[idx1], individual[idx2] = individual[idx2], individual[idx1]
 
     return individual
+
+    def FOMX_Crossover(parent1, parent2):
+        # Select two random crossover points
+        cut_point1 = random.randint(1, len(parent1) - 2)
+        cut_point2 = random.randint(cut_point1 + 1, len(parent1) - 1)
+
+        # Initialize offspring with null values
+        offspring1 = [None] * len(parent1)
+        offspring2 = [None] * len(parent2)
+
+        # Copy the segments between cut points from each parent to the other offspring
+        for i in range(cut_point1, cut_point2 + 1):
+            offspring1[i] = parent2[i]
+            offspring2[i] = parent1[i]
+
+        # Initialize mapping dictionaries to track duplications
+        map1 = {}
+        map2 = {}
+
+        # Populate mapping from parent segments
+        for i in range(cut_point1, cut_point2 + 1):
+            map1[parent2[i]] = parent1[i]
+            map2[parent1[i]] = parent2[i]
+
+        # Fill in the rest of the offspring
+        def FillOffspring(offspring, parent, mapping):
+            j = 0  # Index for offspring
+            for gene in parent:
+                if j >= cut_point1 and j <= cut_point2:
+                    j += 1  # Skip the crossover segment
+                if offspring[j] is None or gene not in mapping:
+                    offspring[j] = gene
+                    j += 1
+                else:
+                    # Resolve duplication using mapping
+                    while gene in mapping:
+                        gene = mapping[gene]
+                    offspring[j] = gene
+                    j += 1
+
+        # Fill both offspring using the mapping function
+        FillOffspring(offspring1, parent1, map2)
+        FillOffspring(offspring2, parent2, map1)
+
+        return offspring1, offspring2

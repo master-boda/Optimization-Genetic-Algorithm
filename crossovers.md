@@ -9,3 +9,5 @@ Pseudo codes  do diferentes tipos de crossovers adaptados ao trabalho.
     - Order Crossover
     - Cycle Crossover
     - m-crossover
+    - Greedy Crossover (GX)
+    - Improved Greedy Crossover (IGX)
