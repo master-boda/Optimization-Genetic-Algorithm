@@ -120,11 +120,47 @@ def Ordered_crossover(parent1, parent2):
     
     return offspring1, offspring2 # in progress 
 
-Def cycle_crossover(parent1, parent2): 
+def ordered_crossover(parent1, parent2):
+    """
+    Perform the ordered crossover operation on two parent routes.
+
+    Args:
+    parent1 (list): The first parent route.
+    parent2 (list): The second parent route.
+
+    Returns:
+    tuple: A tuple containing two offspring routes.
+    """
     size = len(parent1)
-    
-    
-    
+    # Select crossover points, ensuring they fall within the range of indexable area elements
+    cp1, cp2 = sorted(random.sample(range(1, size - 2), 2))
+
+    # Create offspring with None values, excluding start and end 'D'
+    offspring1 = [None] * size
+    offspring2 = [None] * size
+    offspring1[0], offspring1[-1] = 'D', 'D'
+    offspring2[0], offspring2[-1] = 'D', 'D'
+
+    # Copy the segment between the crossover points
+    offspring1[cp1:cp2 + 1] = parent2[cp1:cp2 + 1]
+    offspring2[cp1:cp2 + 1] = parent1[cp1:cp2 + 1]
+
+    # Fill in the remaining slots ensuring 'RG' remains in the second half and no duplicates
+    def fill_offspring(offspring, parent):
+        remaining_elements = [item for item in parent if item not in offspring[cp1:cp2 + 1]]
+        idx_fill = 1  # start filling from the first position after 'D'
+        for item in remaining_elements:
+            while offspring[idx_fill] is not None:
+                idx_fill += 1
+            if idx_fill < cp1 or idx_fill > cp2:
+                offspring[idx_fill] = item
+            idx_fill += 1
+
+    fill_offspring(offspring1, parent1)
+    fill_offspring(offspring2, parent2)
+
+    return offspring1, offspring2  ###########incompleto#######################
+
     
     
     
