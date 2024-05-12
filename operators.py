@@ -61,24 +61,21 @@ def FOMX_Crossover(parent1, parent2):
         map1[parent2[i]] = parent1[i]
         map2[parent1[i]] = parent2[i]
 
-        # Fill in the rest of the offspring
-        def FillOffspring(offspring, parent, mapping):
-            j = 0  # Index for offspring
-            for gene in parent:
-                if j >= cut_point1 and j <= cut_point2:
-                    j += 1  # Skip the crossover segment
-                if offspring[j] is None or gene not in mapping:
-                    offspring[j] = gene
-                    j += 1
-                else:
-                    # Resolve duplication using mapping
-                    while gene in mapping:
-                        gene = mapping[gene]
-                    offspring[j] = gene
-                    j += 1
+    # Fill in the rest of the offspring
+    def FillOffspring(offspring, parent, mapping):
+        j = 0
+        for gene in parent:
+            if cut_point1 <= j < cut_point2:
+                j += 1
+                continue
+            while gene in mapping and j < len(offspring):
+                gene = mapping[gene]
+            if j < len(offspring):
+                offspring[j] = gene
+                j += 1
 
-        # Fill both offspring using the mapping function
-        FillOffspring(offspring1, parent1, map2)
-        FillOffspring(offspring2, parent2, map1)
+    # Fill both offspring using the mapping function
+    FillOffspring(offspring1, parent1, map2)
+    FillOffspring(offspring2, parent2, map1)
 
-        return offspring1, offspring2
+    return offspring1, offspring2
