@@ -87,6 +87,8 @@ def FOMX_Crossover(parent1, parent2):
 
     return offspring1, offspring2
 
+import random
+
 def Ordered_crossover(parent1, parent2):
     size = len(parent1)
     cut_point1, cut_point2 = sorted(random.sample(range(1, size-1), 2))
@@ -94,26 +96,33 @@ def Ordered_crossover(parent1, parent2):
     offspring1 = [None] * size
     offspring2 = [None] * size
     
+    # Copy the segment
     for i in range(cut_point1, cut_point2 + 1):
         offspring1[i] = parent1[i]
         offspring2[i] = parent2[i]
         
-    # Fill the rest of the offspring 
+    # Function to fill the rest of the offspring
     def fill_offspring(offspring, parent):
-        j = 0
-        for i in range(size):
-            if cut_point1 <= i <= cut_point2:
-                continue
-            gene = parent[i]
+        fill_index = cut_point2 + 1
+        used_indices = set(range(cut_point1, cut_point2 + 1))
+        for gene in parent:
             if gene not in offspring:
-                while offspring[j] is not None:
-                    j += 1
-                offspring[j] = gene
+                while offspring[fill_index % len(offspring)] is not None:
+                    fill_index += 1
+                offspring[fill_index % len(offspring)] = gene
+                fill_index += 1
+
+
+    # Fill offspring1 with elements from parent2 starting after the segment
+    fill_offspring(offspring1, parent2) 
+    # Fill offspring2 with elements from parent1 starting after the segment
+    fill_offspring(offspring2, parent1)
     
-    fill_offspring(offspring1, parent1) 
-    fill_offspring(offspring2, parent2)
+    return offspring1, offspring2 # in progress 
+
+Def cycle_crossover(parent1, parent2): 
+    size = len(parent1)
     
-    return offspring1, offspring2
     
     
     

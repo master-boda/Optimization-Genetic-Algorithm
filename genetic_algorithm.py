@@ -71,4 +71,4 @@ def ga(initializer,
          
     return population[np.argmin(fitnesses)], min(fitnesses)
 
-ga(population, fitness_function, roulette_selection, FOMX_Crossover, simple_mutation)
+ga(population, fitness_function, roulette_selection, Ordered_crossover, simple_mutation)
