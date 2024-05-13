@@ -41,18 +41,3 @@ def plot_fitness_histogram(initial_fitnesses, final_fitnesses):
                       barmode='overlay',
                       template='plotly_white')
     fig.show()
-
-from utils import *
-from population import *
-from experiment import *
-
-def compare_individuals(n=5):
-    matrix = geo_matrix()
-    
-    for _ in range(n):
-        ind1 = generate_individual()
-        ind2 = insertion_algorithm(matrix)
-        print(f"Individual 1: {ind1}, Fitness: {fitness_function(ind1, matrix)}")
-        print(f"Individual 2: {ind2}, Fitness: {fitness_function(ind2, matrix)}")
-        
-compare_individuals()

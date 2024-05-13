@@ -1,6 +1,6 @@
 import random
-from population import generate_individual
-from operators import *
+from pop.population import generate_individual
+from operators.crossovers import *
 
 def test_crossover(crossover, verbose=False):
     for i in range(50):

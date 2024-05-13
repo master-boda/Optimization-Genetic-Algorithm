@@ -18,17 +18,16 @@ def generate_individual():
     # exclude 'Dirtmouth' for route generation
     possible_areas = [area for area in areas if area != 'D']
     
-    # randomize the order of areas
     random.shuffle(possible_areas)
 
     # determine the start index for 'RG' to be placed in the second half of the route
     half_point = len(possible_areas) // 2
-    # choose a random index from the second half of the list
+    
     rg_index = random.randint(half_point, len(possible_areas))
     possible_areas.insert(rg_index, 'RG')
     
     route.extend(possible_areas)
-    route.append('D')  # end at 'Dirtmouth'
+    route.append('D') # end at 'Dirtmouth'
     
     return route
 

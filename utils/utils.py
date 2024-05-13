@@ -1,6 +1,24 @@
 import numpy as np
 import pandas as pd
 
+def check_constraints(route):
+    # length of the route ignoring Dirtmouth endpoints
+    route_length = len(route) - 2
+    
+    # check for "RG" in the second half of the route
+    rg_index = route.index('RG') if 'RG' in route else -1
+    constraint1 = rg_index >= len(route) // 2
+
+    # check for sequence "QS"-"DV" (KS will always be present in the route simultaneously :O)
+    qs_dv_sequence = any(route[i] == 'QS' and route[i+1] == 'DV' for i in range(route_length))
+    constraint2 = not qs_dv_sequence
+
+    # check for sequence "QG"-"CS"
+    qg_cs_sequence = any(route[i] == 'QG' and route[i+1] == 'CS' for i in range(route_length))
+    constraint3 = not qg_cs_sequence
+
+    return constraint1 and constraint2 and constraint3
+
 def fitness_function(route, geo_matrix):
     """
     Calculates the total accumulated Geo for a given route.
@@ -59,7 +77,6 @@ def geo_matrix_generator(min_value=-500, max_value=500, original=False):
     # extract area labels
     labels = df_original.index.tolist()
 
-    # return the original matrix if original is True
     if original:
         return df_original
     
