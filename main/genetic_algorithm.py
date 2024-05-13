@@ -1,10 +1,16 @@
 import random
 import numpy as np
+
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from pop.population import *
 from operators.selection_algorithms import *
 from operators.crossovers import *
 from operators.mutators import *
 from operators.optimizations import *
-from pop.population import *
 from utils.utils import *
 
 def ga(initializer,
@@ -27,13 +33,13 @@ def ga(initializer,
     
     # select the Geo matrix to use (original=True uses the original matrix from the project instructions)
     if matrix_to_use is None:
-        matrix = geo_matrix_generator(original=og_matrix)
-    else:
+        matrix = geo_matrix_generator()
+    #else:
         # check if it is a DataFrame
-        if not isinstance(matrix_to_use, pd.DataFrame):
-            df_original = pd.read_csv('Geo_Matrix_Dataset.csv', index_col='From/To')
-            labels = df_original.index.tolist()
-            matrix_to_use = pd.DataFrame(matrix_to_use, index=labels, columns=labels)
+        #if not isinstance(matrix_to_use, pd.DataFrame):
+            #df_original = pd.read_csv('Geo_Matrix_Dataset.csv', index_col='From/To')
+            #labels = df_original.index.tolist()
+            #matrix_to_use = pd.DataFrame(matrix_to_use, index=labels, columns=labels)
 
     # compute fitness for each individual in the population
     fitnesses = [evaluator(ind, matrix) for ind in population]
@@ -42,7 +48,7 @@ def ga(initializer,
      print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
      print(f'Population size: {population_size}')
      print(f'Number of generations: {num_generations}')
-     print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix.head(15)}')
+     #print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix.head(15)}')
     
     for generation in range(num_generations):    
      if elitism:
