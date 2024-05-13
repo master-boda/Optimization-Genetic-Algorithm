@@ -1,6 +1,6 @@
 from utils.utils import fitness_function
 
-def two_opt(route, geo_matrix, max_iterations=2):
+def two_opt(route, geo_matrix, max_iterations=25):
     best_route = route[:]
     improved = False
     iteration = 0
