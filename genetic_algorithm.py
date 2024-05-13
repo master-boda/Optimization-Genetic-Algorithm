@@ -10,6 +10,7 @@ def ga(initializer,
     selection,
     crossover,
     mutation,
+    matrix_to_use=None,
     mutation_rate=0.05,
     population_size=200,
     num_generations=50,
@@ -23,8 +24,15 @@ def ga(initializer,
     population = initializer(population_size)
     
     # select the Geo matrix to use (original=True uses the original matrix from the project instructions)
-    matrix = geo_matrix_generator(original=og_matrix)
-    
+    if matrix_to_use is None:
+        matrix = geo_matrix_generator(original=og_matrix)
+    else:
+        # check if it is a DataFrame
+        if not isinstance(matrix_to_use, pd.DataFrame):
+            df_original = pd.read_csv('Geo_Matrix_Dataset.csv', index_col='From/To')
+            labels = df_original.index.tolist()
+            matrix_to_use = pd.DataFrame(matrix_to_use, index=labels, columns=labels)
+
     # compute fitness for each individual in the population
     fitnesses = [evaluator(ind, matrix) for ind in population]
     
@@ -60,8 +68,8 @@ def ga(initializer,
          c1 = mutation(c1, mutation_rate)
          c2 = mutation(c2, mutation_rate)
          
-         #c1 = two_opt(c1, matrix)
-         #c2 = two_opt(c2, matrix)
+         c1 = two_opt(c1, matrix)
+         c2 = two_opt(c2, matrix)
          
          offspring.extend([c1, c2])
          
