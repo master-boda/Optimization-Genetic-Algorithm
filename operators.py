@@ -1,6 +1,5 @@
 import random
 
-
 def partially_mapped_crossover(parent1, parent2):
     size = len(parent1)
     idx1, idx2 = sorted(random.sample(range(1, size-1), 2))
@@ -25,21 +24,7 @@ def partially_mapped_crossover(parent1, parent2):
     
     return child1, child2
 
-# order and cycle crossover
-
-def simple_mutation(individual, config):
-    if random.random() < config.mutation_rate:
-        size = len(individual)
-        
-        # prevents mutation of Dirtmouth
-        idx1, idx2 = random.sample(range(1, size-1), 2)
-        
-        individual[idx1], individual[idx2] = individual[idx2], individual[idx1]
-
-    return individual
-
-
-def FOMX_Crossover(parent1, parent2):
+def fomx_crossover(parent1, parent2):
     size = len(parent1)
     # Select two random crossover points
     cut_point1, cut_point2 = sorted(random.sample(range(1, size-1), 2))
@@ -86,81 +71,93 @@ def FOMX_Crossover(parent1, parent2):
     offspring2[0], offspring2[-1] = parent2[0], parent2[-1]
 
     return offspring1, offspring2
-
-import random
-
-def Ordered_crossover(parent1, parent2):
-    size = len(parent1)
-    cut_point1, cut_point2 = sorted(random.sample(range(1, size-1), 2))
     
-    offspring1 = [None] * size
-    offspring2 = [None] * size
     
-    # Copy the segment
-    for i in range(cut_point1, cut_point2 + 1):
-        offspring1[i] = parent1[i]
-        offspring2[i] = parent2[i]
+def simple_mutation(individual, rate):
+    if random.random() < rate:
+        size = len(individual)
         
-    # Function to fill the rest of the offspring
-    def fill_offspring(offspring, parent):
-        fill_index = cut_point2 + 1
-        used_indices = set(range(cut_point1, cut_point2 + 1))
-        for gene in parent:
-            if gene not in offspring:
-                while offspring[fill_index % len(offspring)] is not None:
-                    fill_index += 1
-                offspring[fill_index % len(offspring)] = gene
-                fill_index += 1
+        # prevents mutation of Dirtmouth
+        idx1, idx2 = random.sample(range(1, size-1), 2)
+        
+        individual[idx1], individual[idx2] = individual[idx2], individual[idx1]
 
-
-    # Fill offspring1 with elements from parent2 starting after the segment
-    fill_offspring(offspring1, parent2) 
-    # Fill offspring2 with elements from parent1 starting after the segment
-    fill_offspring(offspring2, parent1)
+    return individual
     
-    return offspring1, offspring2 # in progress 
+from utils import fitness_function
 
-def ordered_crossover(parent1, parent2):
+def two_opt(route, geo_matrix, max_iterations=100000):
     """
-    Perform the ordered crossover operation on two parent routes.
+    Implements the 2-opt optimization algorithm to improve the route.
 
-    Args:
-    parent1 (list): The first parent route.
-    parent2 (list): The second parent route.
+    Parameters:
+    route (list): Initial route, with the first and last elements fixed.
+    geo_matrix (DataFrame): DataFrame where indices and columns represent areas, and values indicate Geo changes between areas.
+    max_iterations (int): Maximum number of iterations to perform without improvement before stopping.
 
     Returns:
-    tuple: A tuple containing two offspring routes.
+    list: Optimized route.
     """
-    size = len(parent1)
-    # Select crossover points, ensuring they fall within the range of indexable area elements
-    cp1, cp2 = sorted(random.sample(range(1, size - 2), 2))
+    best_route = route[:]
+    improved = False
+    iteration = 0
 
-    # Create offspring with None values, excluding start and end 'D'
-    offspring1 = [None] * size
-    offspring2 = [None] * size
-    offspring1[0], offspring1[-1] = 'D', 'D'
-    offspring2[0], offspring2[-1] = 'D', 'D'
+    while not improved and iteration < max_iterations:
+        improved = False
+        best_fit = fitness_function(best_route, geo_matrix)  # Use the custom fitness function
+        # Note: start i from 1 and stop j at len(route) - 2 to keep endpoints fixed
+        for i in range(1, len(best_route) - 2):
+            for j in range(i + 1, len(best_route) - 1):
+                if j - i == 1: continue  # No need to swap adjacent elements
+                new_route = best_route[:]
+                # Reverse the segment between i and j+1
+                new_route[i:j + 1] = new_route[i:j + 1][::-1]
+                new_fit = fitness_function(new_route, geo_matrix)  # Use the custom fitness function
+                if new_fit > best_fit:
+                    best_route = new_route
+                    best_fit = new_fit
+                    improved = True
+                    break
+            if improved:
+                break
+        iteration += 1
 
-    # Copy the segment between the crossover points
-    offspring1[cp1:cp2 + 1] = parent2[cp1:cp2 + 1]
-    offspring2[cp1:cp2 + 1] = parent1[cp1:cp2 + 1]
+    return best_route
 
-    # Fill in the remaining slots ensuring 'RG' remains in the second half and no duplicates
-    def fill_offspring(offspring, parent):
-        remaining_elements = [item for item in parent if item not in offspring[cp1:cp2 + 1]]
-        idx_fill = 1  # start filling from the first position after 'D'
-        for item in remaining_elements:
-            while offspring[idx_fill] is not None:
-                idx_fill += 1
-            if idx_fill < cp1 or idx_fill > cp2:
-                offspring[idx_fill] = item
-            idx_fill += 1
+def two_opt(route, geo_matrix, max_iterations=1):
+    """
+    Implements the 2-opt optimization algorithm to improve the route.
 
-    fill_offspring(offspring1, parent1)
-    fill_offspring(offspring2, parent2)
+    Parameters:
+    route (list): Initial route, with the first and last elements fixed.
+    geo_matrix (DataFrame): DataFrame where indices and columns represent areas, and values indicate Geo changes between areas.
+    max_iterations (int): Maximum number of iterations to perform without improvement before stopping.
 
-    return offspring1, offspring2  ###########incompleto#######################
+    Returns:
+    list: Optimized route.
+    """
+    best_route = route[:]
+    improved = False
+    iteration = 0
 
-    
-    
-    
+    while not improved and iteration < max_iterations:
+        improved = False
+        best_fit = fitness_function(best_route, geo_matrix)  # Use the custom fitness function
+        # Note: start i from 1 and stop j at len(route) - 2 to keep endpoints fixed
+        for i in range(1, len(best_route) - 2):
+            for j in range(i + 1, len(best_route) - 1):
+                if j - i == 1: continue  # No need to swap adjacent elements
+                new_route = best_route[:]
+                # Reverse the segment between i and j+1
+                new_route[i:j + 1] = new_route[i:j + 1][::-1]
+                new_fit = fitness_function(new_route, geo_matrix)  # Use the custom fitness function
+                if new_fit > best_fit:
+                    best_route = new_route
+                    best_fit = new_fit
+                    improved = True
+                    break
+            if improved:
+                break
+        iteration += 1
+
+    return best_route

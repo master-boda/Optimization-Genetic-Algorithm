@@ -23,7 +23,7 @@ def ga(initializer,
     population = initializer(population_size)
     
     # select the Geo matrix to use (original=True uses the original matrix from the project instructions)
-    matrix = geo_matrix(original=og_matrix)
+    matrix = geo_matrix_generator(original=og_matrix)
     
     # compute fitness for each individual in the population
     fitnesses = [evaluator(ind, matrix) for ind in population]
@@ -57,8 +57,11 @@ def ga(initializer,
          else:
           c1, c2 = p1, p2
           
-         #c1 = mutation(c1, mutation_rate)
-         #c2 = mutation(c2, mutation_rate)
+         c1 = mutation(c1, mutation_rate)
+         c2 = mutation(c2, mutation_rate)
+         
+         #c1 = two_opt(c1, matrix)
+         #c2 = two_opt(c2, matrix)
          
          offspring.extend([c1, c2])
          
@@ -68,7 +71,8 @@ def ga(initializer,
      if verbose:
          current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
          print(f'Generation {generation} best fitness: {current_best_fitness}')
+         print(f'Best individual: {population[np.argmax(fitnesses)]}')
          
     return population[np.argmin(fitnesses)], min(fitnesses)
 
-ga(population, fitness_function, roulette_selection, Ordered_crossover, simple_mutation)
+ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation)

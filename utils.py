@@ -38,7 +38,7 @@ def fitness_function(route, geo_matrix):
     return max(total_geo, total_geo_without_ks)
 
 
-def geo_matrix(min_value=-500, max_value=500, original=False):
+def geo_matrix_generator(min_value=-500, max_value=500, original=False):
     """
     If original is True, returns the original Geo matrix given in the Project Description.
     Creates a matrix with biased random values representing Geo gains or losses.

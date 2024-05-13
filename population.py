@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 def generate_individual():
     """
@@ -46,5 +47,3 @@ def population(n):
     population = [generate_individual() for _ in range(n)]
     
     return population
-
-print(generate_individual())
