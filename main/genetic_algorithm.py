@@ -11,7 +11,6 @@ from operators.selection_algorithms import *
 from operators.crossovers import *
 from operators.mutators import *
 from operators.optimizations import *
-
 from utils.utils import *
 
 def ga(initializer,
@@ -49,7 +48,7 @@ def ga(initializer,
      print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
      print(f'Population size: {population_size}')
      print(f'Number of generations: {num_generations}')
-     print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix.head(15)}')
+     #print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix.head(15)}')
     
     for generation in range(num_generations):    
      if elitism:

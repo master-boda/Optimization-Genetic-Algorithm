@@ -36,7 +36,8 @@ def fitness_function(route, geo_matrix):
     total_geo_without_ks = 0
     skip_ks = False
 
-    area_to_index = {'D': 0, 'G': 1, 'FC': 2, 'QG': 3, 'CS': 4, 'KS': 5, 'DV': 6, 'SN': 7, 'QS': 8}
+    area_to_index = {'D': 0, 'G': 1, 'FC': 2, 'QG': 3, 'CS': 4, 'KS': 5, 'DV': 6, 'SN': 7, 'QS': 8, 'RG': 9}
+
 
     for i in range(len(route) - 1):
         from_area = area_to_index[route[i]]
