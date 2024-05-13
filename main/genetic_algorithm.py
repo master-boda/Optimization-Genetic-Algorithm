@@ -1,10 +1,12 @@
 import random
 import numpy as np
+
+from pop.population import *
 from operators.selection_algorithms import *
 from operators.crossovers import *
 from operators.mutators import *
 from operators.optimizations import *
-from pop.population import *
+
 from utils.utils import *
 
 def ga(initializer,
