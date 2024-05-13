@@ -61,7 +61,7 @@ def fitness_function(route, geo_matrix):
 
 
 
-def geo_matrix_generator(min_value=-500, max_value=500, original=False):
+def geo_matrix_generator(min_value=-500, max_value=500, size=10):
     """
     If original is True, returns the original Geo matrix given in the Project Description.
     Creates a matrix with biased random values representing Geo gains or losses.
@@ -77,21 +77,12 @@ def geo_matrix_generator(min_value=-500, max_value=500, original=False):
     Returns:
         list of lists: A matrix representing the Geo matrix.
     """
-    # Simulated loading of the original matrix from the description.
-    # This should be replaced with actual code to load the matrix if needed.
-    labels = ['Dirtmouth', 'Greenpath', 'Forgotten Crossroads', 'Queen\'s Station', 
-              'Queen\'s Gardens', 'City Storerooms', 'King\'s Station', 'Resting Grounds',
-              'Distant Village', 'Stag Nest']
-    
-    if original:
-        # Placeholder for actual original matrix load
-        return [[0]*len(labels) for _ in labels]
 
-    size = len(labels)
+
     matrix = [[0]*size for _ in range(size)]
 
-    index_G = labels.index('Greenpath')
-    index_FC = labels.index('Forgotten Crossroads')
+    index_G = 1
+    index_FC = 2
 
     positive_values = []
 
