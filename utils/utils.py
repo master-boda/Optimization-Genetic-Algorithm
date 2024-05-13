@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 def check_constraints(route):
     # length of the route ignoring Dirtmouth endpoints
@@ -23,12 +22,12 @@ def fitness_function(route, geo_matrix):
     """
     Calculates the total accumulated Geo for a given route.
     Sums the Geo gains or losses when traveling from one area to another along the route.
-    Geo values are obtained from a Geo matrix which is a dictionary of dictionaries.
+    Geo values are obtained from a geo_matrix which is a list of lists.
 
     Parameters:
     route (list of str): The route taken, represented by area initials.
-    geo_matrix (dict of dict): A dictionary where keys and nested keys represent areas, 
-                               and values indicate Geo changes between areas.
+    geo_matrix (list of lists): A matrix where each list corresponds to an area and contains
+                                the Geo changes to all other areas.
 
     Returns:
     int: The total Geo accumulated along the route.
@@ -37,7 +36,6 @@ def fitness_function(route, geo_matrix):
     total_geo_without_ks = 0
     skip_ks = False
 
-    # Convert area initials to indices based on their order in the matrix
     area_to_index = {'D': 0, 'G': 1, 'FC': 2, 'QG': 3, 'CS': 4, 'KS': 5, 'DV': 6, 'SN': 7, 'QS': 8}
 
     for i in range(len(route) - 1):
@@ -60,6 +58,8 @@ def fitness_function(route, geo_matrix):
         total_geo += geo_matrix[from_area][to_area]
 
     return max(total_geo, total_geo_without_ks)
+
+
 
 def geo_matrix_generator(min_value=-500, max_value=500, original=False):
     """
