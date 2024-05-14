@@ -26,4 +26,4 @@ def test_crossover(crossover, verbose=False):
             if i == 49:
                 print(f"Test passed for iteration {i+1}")
 
-test_crossover(partially_mapped_crossover, verbose=True)
+test_crossover(cycle_crossover, verbose=True)
