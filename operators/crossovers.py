@@ -136,3 +136,37 @@ def ordered_crossover(parent1, parent2):
             index2 += 1
     
     return child1, child2
+
+
+def cycle_crossover(parent1, parent2):
+    size = len(parent1)
+    offspring1, offspring2 = [None]*size, [None]*size
+
+    visited = [False] * size
+
+    # Randomly select a starting position for the cycle
+    #start_pos = random.randint(0, size - 1)
+    start_pos = 0
+    cycle = []
+
+    # Create the cycle
+    current_pos = start_pos
+    while not visited[current_pos]:
+        cycle.append(current_pos)
+        visited[current_pos] = True
+        value = parent1[current_pos]
+        current_pos = parent2.index(value)
+
+    # Assign cycle values to offspring
+    for pos in cycle:
+        offspring1[pos] = parent1[pos]
+        offspring2[pos] = parent2[pos]
+
+    # Fill in the remaining positions with values from the other parent
+    for i in range(size):
+        if offspring1[i] is None:
+            offspring1[i] = parent2[i]
+        if offspring2[i] is None:
+            offspring2[i] = parent1[i]
+
+    return offspring1, offspring2
