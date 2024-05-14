@@ -7,7 +7,7 @@ Pseudo codes  do diferentes tipos de crossovers adaptados ao trabalho.
     - Heuristics Crossover
     - FAST ORDER MAPPED CROSSOVER           DONE
     - Royal lineage 
-    - Ordered Crossover                     in progress
+    - Ordered Crossover                     DONE
     - Cycle Crossover
     - m-crossover
     - Greedy Crossover (GX)
