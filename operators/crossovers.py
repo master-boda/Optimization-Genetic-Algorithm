@@ -31,58 +31,108 @@ def partially_mapped_crossover(parent1, parent2):
     
     return child1, child2    
 
-import numpy as np
-
-def cycle_crossover(parent1, parent2):
+def fast_ordered_mapped_crossover(parent1, parent2):
     """
-    Perform cycle crossover (CX) between two parent permutations.
-    
-    :param parent1: List of elements representing the first parent.
-    :param parent2: List of elements representing the second parent.
-    :return: Two children resulting from the crossover.
+    Performs a Fast Ordered Mapped Crossover (FOMX) on two parent genomes.
+
+    This function first selects two random cut points in the parent genomes. It then swaps the segments between these cut points 
+    to create two offspring. The remaining areas in each offspring are filled with the areas from the other parent that are not already 
+    in the offspring, preserving the order of appearance in the parent.
+
+    Args:
+        parent1 (list): The first parent genome.
+        parent2 (list): The second parent genome.
+
+    Returns:
+        tuple: A tuple containing two offspring genomes.
+
+    Note:
+        This function assumes that the parent genomes are lists of the same length and that they do not contain any None values.
     """
     size = len(parent1)
+    
+    #random cut points
+    cutpoint1, cutpoint2 = sorted(random.sample(range(1, size-1), 2))
+    
+    #  Extract segment from parent1
+    segment1 = parent1[cutpoint1:cutpoint2+1]
+    segment2 = parent2[cutpoint1:cutpoint2+1]
+    
+    # initialize children
+    offspring1 = [None]*size
+    offspring2 = [None]*size
+    
+    #Place segments in the corresponding positions
+    offspring1[cutpoint1:cutpoint2+1] = segment2
+    offspring2[cutpoint1:cutpoint2+1] = segment1
+    
+    # Create mappings for remaining cities
+    remaining_areas1 = [area for area in parent2 if area not in segment2]
+    remaining_areas2 = [area for area in parent1 if area not in segment1]
+    
+    # Fill the remaining areas
+    current_pos1 = 0 
+    current_pos2 = 0
+    
+    for area in remaining_areas1:
+        while offspring1[current_pos1] is not None:
+            current_pos1 += 1
+        offspring1[current_pos1] = area
+        
+    for area in remaining_areas2:    
+        while offspring2[current_pos2] is not None:
+            current_pos2 += 1
+        offspring2[current_pos2] = area
+    
+    return offspring1, offspring2   
+
+
+
+def ordered_crossover(parent1, parent2):
+    """
+    Perform an ordered crossover between two parents to generate two children.
+
+    The function selects a random subset from each parent and maintains the order of these elements in the respective child.
+    It then fills the rest of each child's genome with genes from the other parent in the order they appear,
+    skipping genes already included from the selected subset.
+
+    Parameters:
+    - parent1 (list): The first parent's genome.
+    - parent2 (list): The second parent's genome.
+
+    Returns:
+    - tuple of lists: A tuple containing the genomes of the two children resulting from the crossover.
+    """
+    size = len(parent1)
+    # Generate two random crossover points
+    start, end = sorted(random.sample(range(1, size - 1), 2))
+    
+    # Initialize children with None placeholders
     child1 = [None] * size
     child2 = [None] * size
-
-    # Create a mask for tracking visited indices
-    visited = [False] * size
     
-    def get_cycle(start):
-        cycle = []
-        current = start
-        while True:
-            cycle.append(current)
-            visited[current] = True
-            current = parent1.index(parent2[current])
-            if current == start:
-                break
-        return cycle
+    # Include the subset from each parent into the respective child
+    child1[start:end+1] = parent2[start:end+1]
+    child2[start:end+1] = parent1[start:end+1]
     
-    # Perform the cycle crossover
-    for i in range(size):
-        if not visited[i]:
-            cycle = get_cycle(i)
-            for index in cycle:
-                child1[index] = parent1[index]
-                child2[index] = parent2[index]
-
-    # Fill in the rest from the other parent
-    for i in range(size):
-        if child1[i] is None:
-            child1[i] = parent2[i]
-        if child2[i] is None:
-            child2[i] = parent1[i]
-
+    # Fill the remaining positions in child1 with the elements from parent1 in order
+    fill_pos1 = (item for item in parent1 if item not in child1[start:end+1])
+    index1 = 0
+    for gene in fill_pos1:
+        while child1[index1] is not None:
+            index1 += 1
+        if index1 < size:
+            child1[index1] = gene
+            index1 += 1
+    
+    # Fill the remaining positions in child2 with the elements from parent2 in order
+    fill_pos2 = (item for item in parent2 if item not in child2[start:end+1])
+    index2 = 0
+    for gene in fill_pos2:
+        while child2[index2] is not None:
+            index2 += 1
+        if index2 < size:
+            child2[index2] = gene
+            index2 += 1
+    
     return child1, child2
-
-# Example usage
-parent1 = [1, 2, 3, 4, 5, 6, 7, 8]
-parent2 = [4, 1, 2, 3, 6, 5, 8, 7]
-
-child1, child2 = cycle_crossover(parent1, parent2)
-print("Parent 1:  ", parent1)
-print("Parent 2:  ", parent2)
-print("Child 1:   ", child1)
-print("Child 2:   ", child2)
-    
