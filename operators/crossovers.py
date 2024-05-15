@@ -139,34 +139,79 @@ def ordered_crossover(parent1, parent2):
 
 
 def cycle_crossover(parent1, parent2):
+    
     size = len(parent1)
-    offspring1, offspring2 = [None]*size, [None]*size
-
+    offspring1 = [0] * size
+    offspring2 = [0] * size
     visited = [False] * size
-
-    # Randomly select a starting position for the cycle
-    #start_pos = random.randint(0, size - 1)
-    start_pos = 0
+    start_pos = random.randint(0, size - 1)
     cycle = []
-
-    # Create the cycle
-    current_pos = start_pos
-    while not visited[current_pos]:
-        cycle.append(current_pos)
-        visited[current_pos] = True
-        value = parent1[current_pos]
-        current_pos = parent2.index(value)
-
-    # Assign cycle values to offspring
+    while True:
+        cycle.append(start_pos)
+        visited[start_pos] = True
+        value = parent1[start_pos]
+        next_pos = parent2.index(value)
+        if visited[next_pos]:
+            break
+        else:
+            start_pos = next_pos
     for pos in cycle:
         offspring1[pos] = parent1[pos]
         offspring2[pos] = parent2[pos]
-
-    # Fill in the remaining positions with values from the other parent
     for i in range(size):
-        if offspring1[i] is None:
+        if offspring1[i] == 0:
             offspring1[i] = parent2[i]
-        if offspring2[i] is None:
+        if offspring2[i] == 0:
             offspring2[i] = parent1[i]
+    return offspring1, offspring2
 
+def cycle2_crossover(parent1, parent2):
+    """
+    Perform a cycle crossover on two parent lists to produce two offspring lists.
+
+    Cycle crossover (CX) is a crossover operator used in genetic algorithms
+    where cycles in the parent permutations are identified and copied directly
+    to the offspring.
+
+    Parameters:
+    parent1 (list): The first parent permutation.
+    parent2 (list): The second parent permutation.
+
+    Returns:
+    tuple: Two offspring permutations generated from the parents.
+    """
+    
+    size = len(parent1)
+    offspring1 = [0] * size
+    offspring2 = [0] * size
+    visited = [False] * size
+    
+    # Randomly select the starting position for the cycle
+    start_pos = random.randint(0, size - 1)
+    print(start_pos)
+    cycle = []
+    
+    # Identify the cycle in the parent permutations
+    while True:
+        cycle.append(start_pos)
+        visited[start_pos] = True
+        value = parent1[start_pos]
+        next_pos = parent2.index(value)
+        if visited[next_pos]:
+            break
+        else:
+            start_pos = next_pos
+    
+    # Copy the cycle from parents to offspring
+    for pos in cycle:
+        offspring1[pos] = parent1[pos]
+        offspring2[pos] = parent2[pos]
+    
+    # Fill in the remaining positions with the other parent's genes
+    for i in range(size):
+        if offspring1[i] == 0:
+            offspring1[i] = parent2[i]
+        if offspring2[i] == 0:
+            offspring2[i] = parent1[i]
+    
     return offspring1, offspring2
