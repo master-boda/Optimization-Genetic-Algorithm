@@ -6,11 +6,11 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from pop.population import *
 from operators.selection_algorithms import *
 from operators.crossovers import *
 from operators.mutators import *
 from operators.optimizations import *
+from pop.population import *
 from utils.utils import *
 
 def ga(initializer,
@@ -19,9 +19,10 @@ def ga(initializer,
     crossover,
     mutation,
     matrix_to_use=None,
+    matrix_seed=None,
     mutation_rate=0.05,
     population_size=200,
-    num_generations=50,   
+    num_generations=50,
     crossover_rate=0.8,
     elitism_size=2,
     elitism=True,
@@ -33,14 +34,10 @@ def ga(initializer,
     
     # select the Geo matrix to use (original=True uses the original matrix from the project instructions)
     if matrix_to_use is None:
-        matrix = geo_matrix_generator()
-    #else:
-        # check if it is a DataFrame
-        #if not isinstance(matrix_to_use, pd.DataFrame):
-            #df_original = pd.read_csv('Geo_Matrix_Dataset.csv', index_col='From/To')
-            #labels = df_original.index.tolist()
-            #matrix_to_use = pd.DataFrame(matrix_to_use, index=labels, columns=labels)
-
+        matrix = geo_matrix_generator(seed=matrix_seed)
+    else:
+        matrix = np.array(matrix_to_use)
+            
     # compute fitness for each individual in the population
     fitnesses = [evaluator(ind, matrix) for ind in population]
     
@@ -48,7 +45,7 @@ def ga(initializer,
      print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
      print(f'Population size: {population_size}')
      print(f'Number of generations: {num_generations}')
-     #print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix.head(15)}')
+     print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix}')
     
     for generation in range(num_generations):    
      if elitism:
@@ -91,4 +88,4 @@ def ga(initializer,
          
     return population[np.argmin(fitnesses)], min(fitnesses)
 
-ga(population, fitness_function, roulette_selection, ordered_crossover, scramble_mutation)
+ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation)
