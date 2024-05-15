@@ -1,7 +1,6 @@
-import random
-
-import os
 import sys
+import os
+import random
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -28,5 +27,5 @@ def test_crossover(crossover, verbose=False):
             if i == 49:
                 print(f"Test passed for iteration {i+1}")
 
-test_crossover(ordered_crossover, verbose=True)
+test_crossover(cyclew_crossover, verbose=True)
 

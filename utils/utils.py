@@ -1,6 +1,6 @@
 import numpy as np
 
-def check_constraints(route):
+def check_constraints(route: list[str]) -> bool:
     # length of the route ignoring Dirtmouth endpoints
     route_length = len(route) - 2
     
@@ -18,7 +18,7 @@ def check_constraints(route):
 
     return constraint1 and constraint2 and constraint3
 
-def fitness_function(route, geo_matrix):
+def fitness_function(route: list[str], geo_matrix: list[list[int]]) -> int:
     """
     Calculates the total accumulated Geo for a given route.
     Sums the Geo gains or losses when traveling from one area to another along the route.
@@ -62,7 +62,7 @@ def fitness_function(route, geo_matrix):
 
 
 
-def geo_matrix_generator(min_value=-500, max_value=500, size=10):
+def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int = 10) -> list[list[int]]:
     """
     If original is True, returns the original Geo matrix given in the Project Description.
     Creates a matrix with biased random values representing Geo gains or losses.
