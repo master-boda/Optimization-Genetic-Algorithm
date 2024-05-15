@@ -12,5 +12,5 @@ Pseudo codes  do diferentes tipos de crossovers adaptados ao trabalho.
     - m-crossover
     - Greedy Crossover (GX)
     - Improved Greedy Crossover (IGX)
-    - sequential constructive crossover (SCX)
+    - sequential constructive crossover (SCX) in Progress IN PROGRESS 
    
