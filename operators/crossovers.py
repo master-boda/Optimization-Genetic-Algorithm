@@ -170,3 +170,7 @@ def cycle_crossover(parent1: list, parent2: list) -> tuple:
             offspring2[i] = parent1[i]
 
     return offspring1, offspring2
+
+#def sequential_constructive_crossover(parent1, parent2): 
+    
+    
