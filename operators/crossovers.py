@@ -137,35 +137,7 @@ def ordered_crossover(parent1, parent2):
     
     return child1, child2
 
-
 def cycle_crossover(parent1, parent2):
-    
-    size = len(parent1)
-    offspring1 = [0] * size
-    offspring2 = [0] * size
-    visited = [False] * size
-    start_pos = random.randint(0, size - 1)
-    cycle = []
-    while True:
-        cycle.append(start_pos)
-        visited[start_pos] = True
-        value = parent1[start_pos]
-        next_pos = parent2.index(value)
-        if visited[next_pos]:
-            break
-        else:
-            start_pos = next_pos
-    for pos in cycle:
-        offspring1[pos] = parent1[pos]
-        offspring2[pos] = parent2[pos]
-    for i in range(size):
-        if offspring1[i] == 0:
-            offspring1[i] = parent2[i]
-        if offspring2[i] == 0:
-            offspring2[i] = parent1[i]
-    return offspring1, offspring2
-
-def cycle2_crossover(parent1, parent2):
     """
     Perform a cycle crossover on two parent lists to produce two offspring lists.
 
