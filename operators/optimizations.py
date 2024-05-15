@@ -1,6 +1,19 @@
 from utils.utils import fitness_function
 
-def two_opt(route, geo_matrix, max_iterations=2):
+def two_opt(route: list[int], geo_matrix: list[list[float]], max_iterations: int = 2) -> list[int]:
+    """
+    Optimizes a given route using the 2-opt algorithm. This algorithm attempts to reduce the travel
+    cost by iteratively reversing segments of the route. It is commonly used in solving routing problems
+    such as the Traveling Salesman Problem (TSP).
+
+    Parameters:
+    - route (List[int]): The initial route as a list of node indices.
+    - geo_matrix (List[List[float]]): A matrix representing the distances or costs between nodes.
+    - max_iterations (int): The maximum number of iterations to run the optimization. Defaults to 2.
+
+    Returns:
+    - List[int]: The optimized route, potentially improved from the initial route if better configurations are found.
+    """
     best_route = route[:]
     improved = False
     iteration = 0

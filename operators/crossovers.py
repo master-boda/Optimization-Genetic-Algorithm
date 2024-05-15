@@ -1,6 +1,6 @@
 import random
 import numpy as np
-def partially_mapped_crossover(parent1, parent2):
+def partially_mapped_crossover(parent1: list, parent2: list) -> tuple:
     size = len(parent1)
     idx1, idx2 = sorted(random.sample(range(1, size-1), 2))
     child1, child2 = [None]*size, [None]*size
@@ -31,7 +31,7 @@ def partially_mapped_crossover(parent1, parent2):
     
     return child1, child2    
 
-def fast_ordered_mapped_crossover(parent1, parent2):
+def fast_ordered_mapped_crossover(parent1: list, parent2: list) -> tuple:
     """
     Performs a Fast Ordered Mapped Crossover (FOMX) on two parent genomes.
 
@@ -88,7 +88,7 @@ def fast_ordered_mapped_crossover(parent1, parent2):
 
 
 
-def ordered_crossover(parent1, parent2):
+def ordered_crossover(parent1: list, parent2: list) -> tuple:
     """
     Perform an ordered crossover between two parents to generate two children.
 
@@ -138,7 +138,7 @@ def ordered_crossover(parent1, parent2):
     return child1, child2
 
 
-def cycle_crossover(parent1, parent2):
+def cycle_crossover(parent1: list, parent2: list) -> tuple:
     size = len(parent1)
     offspring1, offspring2 = [None]*size, [None]*size
 
