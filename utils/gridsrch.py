@@ -24,6 +24,24 @@ from operators.mutators import *
 from operators.optimizations import *
 from utils.utils import *
 
+def run_algorithm(args):
+    """Runs an algorithm with the given parameters and returns the best fitness value.
+
+    Args:
+        args (tuple): A tuple containing the algorithm function and its parameters.
+
+    Returns:
+        float: The best fitness value obtained from the algorithm.
+
+    """
+    algorithm, params = args
+    try:
+        _, _, _, best_fit = algorithm(**params)
+        return best_fit
+    except Exception as e:
+        # print(f"Error message: {str(e)}")
+        return -1
+
 def grid_search( num_runs: int, parameter_options: dict[str, list[any]]) -> dict[
     str, dict[str, any]]:
     """
