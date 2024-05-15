@@ -1,6 +1,6 @@
 import numpy as np
 
-def check_constraints(route: list[str]) -> bool:
+def check_constraints(route):
     # length of the route ignoring Dirtmouth endpoints
     route_length = len(route) - 2
     
@@ -8,13 +8,15 @@ def check_constraints(route: list[str]) -> bool:
     rg_index = route.index('RG') if 'RG' in route else -1
     constraint1 = rg_index >= len(route) // 2
 
-    # check for sequence "QG"-"CS"
-    qg_cs_sequence = any(route[i] == 'QG' and route[i+1] == 'CS' for i in range(route_length))
-    constraint3 = not qg_cs_sequence
+    # check if "CS" is not after "QG"
+    constraint2 = not ('QG' in route and 'CS' in route and route.index('CS') > route.index('QG'))
 
-    return constraint1 and constraint3
+    # check if route starts and ends with "D"
+    constraint3 = route[0] == "D" and route[-1] == "D"
 
-def fitness_function(route: list[str], geo_matrix: list[list[int]]) -> int:
+    return [constraint1, constraint2, constraint3]
+
+def fitness_function(route, geo_matrix):
     """
     Calculates the total accumulated Geo for a given route.
     Sums the Geo gains or losses when traveling from one area to another along the route.
@@ -34,27 +36,35 @@ def fitness_function(route: list[str], geo_matrix: list[list[int]]) -> int:
 
     area_to_index = {'D': 0, 'G': 1, 'FC': 2, 'QG': 3, 'CS': 4, 'KS': 5, 'DV': 6, 'SN': 7, 'QS': 8, 'RG': 9}
 
+    constraints = check_constraints(route)
+    num_constraints = len(constraints)
+    invalid_penalty = -50 * num_constraints
 
-    for i in range(len(route) - 1):
-        from_area = area_to_index[route[i]]
-        to_area = area_to_index[route[i + 1]]
+    if all(constraints):
+        for i in range(len(route) - 1):
+            from_area = area_to_index[route[i]]
+            to_area = area_to_index[route[i + 1]]
 
-        if skip_ks:
-            skip_ks = False
-            continue
+            if skip_ks:
+                skip_ks = False
+                continue
 
-        if route[i] == 'QS' and route[i + 1] == 'DV':
-            skip_ks = True
-            # Ensure there was a previous area in the route
-            if i > 0:
-                previous_area = area_to_index[route[i-1]]
-                total_geo_without_ks += geo_matrix[previous_area][to_area]
-        else:
-            total_geo_without_ks += geo_matrix[from_area][to_area]
+            if route[i] == 'QS' and route[i + 1] == 'DV':
+                skip_ks = True
+                # Ensure there was a previous area in the route
+                if i > 0:
+                    previous_area = area_to_index[route[i-1]]
+                    total_geo_without_ks += geo_matrix[previous_area][to_area]
+            else:
+                total_geo_without_ks += geo_matrix[from_area][to_area]
 
-        total_geo += geo_matrix[from_area][to_area]
+            total_geo += geo_matrix[from_area][to_area]
 
-    return max(total_geo, total_geo_without_ks)
+        return max(total_geo, total_geo_without_ks)
+    else:
+        return invalid_penalty
+
+
 
 
 
