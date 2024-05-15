@@ -12,6 +12,7 @@ import multiprocessing
 
 from itertools import product, chain
 import statistics as stat
+from typing import Callable, Dict, List, Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -42,7 +43,7 @@ def run_algorithm(args):
         # print(f"Error message: {str(e)}")
         return -1
 
-def grid_search( num_runs: int, parameter_options: dict[str, list[any]]) -> dict[
+def grid_search( ga_variation: Callable, num_runs: int, parameter_options: dict[str, list[any]]) -> dict[
     str, dict[str, any]]:
     """
     Explore various parameter combinations to optimize the performance of a genetic algorithm.
@@ -122,21 +123,22 @@ def grid_search( num_runs: int, parameter_options: dict[str, list[any]]) -> dict
 
 
 if __name__ == '__main__':
-    result = grid_search(ga, 20, {'create_population': [population],
-                                         'pop_size': [50, 100, 500],
-                                         'selector': [rank_selection, tournament_selection,
+    result = grid_search(ga, 20, {'initializer': [population],
+                                         #'pop_size': [50, 100, 500],
+                                         'selection': [rank_selection, tournament_selection,
                                                       rank_selection],
                                          'mutator': [simple_mutation, scramble_mutation,
                                                      displacement_mutation],
-                                         'crossover_operator': [cv.order_based_crossover,
-                                                                cv.partially_mapped_crossover],
-                                         'p_c': [0.5, 0.8, 0.9],
-                                         'p_m': [0.01, 0.05, 0.1, 0.2],
-                                         'elitism': [0, 1, 2, 5],
+                                         'crossover_operator': [fast_ordered_mapped_crossover,
+                                                                ordered_crossover, partially_mapped_crossover],
+                                         'crossover_rate': [0.5, 0.8, 0.9],
+                                         'mutation_rate': [0.01, 0.05, 0.1, 0.2],
+                                         'elitism_size': [0, 1, 2, 5],
                                          'verbose': [False],
-                                         'log': [False],
-                                         'path': [False],
-                                         'plot': [False]
+                                         'maximise': [True], 
+                                         #'log': [False],
+                                         #'path': [False],
+                                         #'plot': [False]
                                          })
 
     print(result)
