@@ -191,7 +191,7 @@ def sequential_constructive_crossover(parent1, parent2):
     index2_1 = 0
     index2_2 = 0
     
-    while len(offspring1) < size or len(offspring2) < size:
+    while len(offspring1) < size and len(offspring2) < size:  # Modified condition
         # Alternate for offspring1
         if len(offspring1) < size:
             if len(offspring1) % 2 == 0:
