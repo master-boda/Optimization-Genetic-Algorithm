@@ -66,7 +66,9 @@ def fitness_function(route, geo_matrix):
 
 
 
-def geo_matrix_generator(min_value=-500, max_value=500, size=10):
+
+
+def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int = 10, seed: int = None) -> list[list[int]]:
     """
     If original is True, returns the original Geo matrix given in the Project Description.
     Creates a matrix with biased random values representing Geo gains or losses.
@@ -78,11 +80,14 @@ def geo_matrix_generator(min_value=-500, max_value=500, size=10):
         min_value (int): Minimum possible value for losses.
         max_value (int): Maximum possible value for gains.
         original (bool): Whether to return the original matrix.
+        seed (int): Seed value for random number generation.
 
     Returns:
         list of lists: A matrix representing the Geo matrix.
     """
 
+    if seed is not None:
+        np.random.seed(seed)
 
     matrix = [[0]*size for _ in range(size)]
 
@@ -112,7 +117,3 @@ def geo_matrix_generator(min_value=-500, max_value=500, size=10):
         matrix[index_G][index_FC] = geo_G_to_FC
 
     return matrix
-
-
-
-print(geo_matrix_generator(-500, 500))

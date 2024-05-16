@@ -1,6 +1,6 @@
 import random
 
-def simple_mutation(individual, rate):
+def simple_mutation(individual: list, rate: float) -> list:
     """
     Apply a simple swap mutation to an individual within a genetic algorithm based on a given mutation rate.
 
@@ -28,7 +28,7 @@ def simple_mutation(individual, rate):
     return individual
 
 
-def scramble_mutation(individual, rate):
+def scramble_mutation(individual: list, rate: float) -> list:
     """
     Perform a scramble mutation on a genetic algorithm individual with a given probability.
 
@@ -59,7 +59,7 @@ def scramble_mutation(individual, rate):
     return individual
 
 
-def displacement_mutation(individual, rate):
+def displacement_mutation(individual: list, rate: float) -> list:
     """
     Apply a displacement mutation to an individual within a genetic algorithm based on a given mutation rate.
 

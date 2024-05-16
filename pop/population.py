@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-def generate_individual():
+def generate_individual() -> list[str]:
     """
     Generate a game route starting and ending at 'Dirtmouth' ('D') without strict sequence rules,
     with 'Resting Grounds' ('RG') inserted at a random position in the second half of the route.
@@ -32,7 +32,7 @@ def generate_individual():
     return route
 
 
-def population(n):
+def population(n: int) -> list[list[str]]:
     """
     Generate a population of individual game routes, each represented as a list.
 
