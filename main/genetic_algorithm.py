@@ -6,11 +6,11 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from pop.population import *
 from operators.selection_algorithms import *
 from operators.crossovers import *
 from operators.mutators import *
 from operators.optimizations import *
+from pop.population import *
 from utils.utils import *
 
 def ga(initializer,
@@ -88,4 +88,4 @@ def ga(initializer,
     
     return population, fitnesses, best_individual, best_fitness
 
-ga(population, fitness_function, roulette_selection, ordered_crossover, scramble_mutation)
+ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation)

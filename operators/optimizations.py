@@ -1,6 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from utils.utils import fitness_function
 
-def two_opt(route: list[int], geo_matrix: list[list[float]], max_iterations: int = 2) -> list[int]:
+def two_opt(route: list[int], geo_matrix: list[list[float]], max_iterations: int = 25) -> list[int]:
     """
     Optimizes a given route using the 2-opt algorithm. This algorithm attempts to reduce the travel
     cost by iteratively reversing segments of the route. It is commonly used in solving routing problems

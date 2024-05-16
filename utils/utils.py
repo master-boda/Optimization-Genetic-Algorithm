@@ -1,6 +1,6 @@
 import numpy as np
 
-def check_constraints(route: list[str]) -> bool:
+def check_constraints(route):
     # length of the route ignoring Dirtmouth endpoints
     route_length = len(route) - 2
     
@@ -8,17 +8,15 @@ def check_constraints(route: list[str]) -> bool:
     rg_index = route.index('RG') if 'RG' in route else -1
     constraint1 = rg_index >= len(route) // 2
 
-    # check for sequence "QS"-"DV" (KS will always be present in the route simultaneously :O)
-    qs_dv_sequence = any(route[i] == 'QS' and route[i+1] == 'DV' for i in range(route_length))
-    constraint2 = not qs_dv_sequence
+    # check if "CS" is not after "QG"
+    constraint2 = not ('QG' in route and 'CS' in route and route.index('CS') > route.index('QG'))
 
-    # check for sequence "QG"-"CS"
-    qg_cs_sequence = any(route[i] == 'QG' and route[i+1] == 'CS' for i in range(route_length))
-    constraint3 = not qg_cs_sequence
+    # check if route starts and ends with "D"
+    constraint3 = route[0] == "D" and route[-1] == "D"
 
-    return constraint1 and constraint2 and constraint3
+    return [constraint1, constraint2, constraint3]
 
-def fitness_function(route: list[str], geo_matrix: list[list[int]]) -> int:
+def fitness_function(route, geo_matrix):
     """
     Calculates the total accumulated Geo for a given route.
     Sums the Geo gains or losses when traveling from one area to another along the route.
@@ -38,31 +36,39 @@ def fitness_function(route: list[str], geo_matrix: list[list[int]]) -> int:
 
     area_to_index = {'D': 0, 'G': 1, 'FC': 2, 'QG': 3, 'CS': 4, 'KS': 5, 'DV': 6, 'SN': 7, 'QS': 8, 'RG': 9}
 
+    constraints = check_constraints(route)
+    num_constraints = len(constraints)
+    invalid_penalty = -50 * num_constraints
 
-    for i in range(len(route) - 1):
-        from_area = area_to_index[route[i]]
-        to_area = area_to_index[route[i + 1]]
+    if all(constraints):
+        for i in range(len(route) - 1):
+            from_area = area_to_index[route[i]]
+            to_area = area_to_index[route[i + 1]]
 
-        if skip_ks:
-            skip_ks = False
-            continue
+            if skip_ks:
+                skip_ks = False
+                continue
 
-        if route[i] == 'QS' and route[i + 1] == 'DV':
-            skip_ks = True
-            # Ensure there was a previous area in the route
-            if i > 0:
-                previous_area = area_to_index[route[i-1]]
-                total_geo_without_ks += geo_matrix[previous_area][to_area]
-        else:
-            total_geo_without_ks += geo_matrix[from_area][to_area]
+            if route[i] == 'QS' and route[i + 1] == 'DV':
+                skip_ks = True
+                # Ensure there was a previous area in the route
+                if i > 0:
+                    previous_area = area_to_index[route[i-1]]
+                    total_geo_without_ks += geo_matrix[previous_area][to_area]
+            else:
+                total_geo_without_ks += geo_matrix[from_area][to_area]
 
-        total_geo += geo_matrix[from_area][to_area]
+            total_geo += geo_matrix[from_area][to_area]
 
-    return max(total_geo, total_geo_without_ks)
+        return max(total_geo, total_geo_without_ks)
+    else:
+        return invalid_penalty
 
 
 
-def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int = 10) -> list[list[int]]:
+
+
+def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int = 10, seed: int = None) -> list[list[int]]:
     """
     If original is True, returns the original Geo matrix given in the Project Description.
     Creates a matrix with biased random values representing Geo gains or losses.
@@ -74,11 +80,14 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
         min_value (int): Minimum possible value for losses.
         max_value (int): Maximum possible value for gains.
         original (bool): Whether to return the original matrix.
+        seed (int): Seed value for random number generation.
 
     Returns:
         list of lists: A matrix representing the Geo matrix.
     """
 
+    if seed is not None:
+        np.random.seed(seed)
 
     matrix = [[0]*size for _ in range(size)]
 
@@ -108,7 +117,3 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
         matrix[index_G][index_FC] = geo_G_to_FC
 
     return matrix
-
-
-
-print(geo_matrix_generator(-500, 500))
