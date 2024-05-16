@@ -124,13 +124,16 @@ def grid_search( ga_variation: Callable, num_runs: int, parameter_options: dict[
 
 if __name__ == '__main__':
     result = grid_search(ga, 20, {'initializer': [population],
+                                  'evaluator' : [fitness_function],
+                                  
                                          #'pop_size': [50, 100, 500],
-                                         'selection': [rank_selection, tournament_selection,
+                                        'selection': [rank_selection, tournament_selection,
                                                       rank_selection],
-                                         'mutator': [simple_mutation, scramble_mutation,
-                                                     displacement_mutation],
                                          'crossover_operator': [fast_ordered_mapped_crossover,
-                                                                ordered_crossover, partially_mapped_crossover],
+                                                                ordered_crossover, 
+                                                                partially_mapped_crossover],
+                                        'mutation': [simple_mutation, scramble_mutation,
+                                                     displacement_mutation], 
                                          'crossover_rate': [0.5, 0.8, 0.9],
                                          'mutation_rate': [0.01, 0.05, 0.1, 0.2],
                                          'elitism_size': [0, 1, 2, 5],
