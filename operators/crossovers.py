@@ -171,35 +171,51 @@ def cycle_crossover(parent1: list, parent2: list) -> tuple:
 
     return offspring1, offspring2
 
-def select_city(parent,index,used): 
-    city = parent[index]
-    while city in used:
-        index = (index + 1) % len(parent)
+  def sequential_constructive_crossover(parent1, parent2): 
+    
+    def select_city(parent, index, used): 
         city = parent[index]
-        
-    return city
+        while city in used:
+            index = (index + 1) % len(parent)
+            city = parent[index]
+        return city
 
-def sequential_constructive_crossover(parent1, parent2): 
     size = len(parent1)
-    offspring = []
-    used = set()
+    offspring1 = []
+    offspring2 = []
     
-    index1 = 0
-    index2 = 0
+    used1 = set()
+    used2 = set()
     
-    while len(offspring) < size:
-        #Alternate between parents
-        if len(offspring) % 2 == 0:
-            city = select_city(parent1,index1,used)
-            index1 = (index1 + 1) % size
+    index1_1 = 0
+    index1_2 = 0
+    index2_1 = 0
+    index2_2 = 0
+    
+    
+    while len(offspring1) < size or len(offspring2) < size:
+        #Alternate for offspring1 
+        if len(offspring1) < size:
+            city = select_city(parent2, index2_1, used1)
+            index1_1 = (index1_1 + 1) % size
         else:
-            city = select_city(parent2,index2,used)
-            index2 = (index2 + 1) % size
-            
-        offspring.append(city)
-        used.add(city) #add used cities
+            city = select_city(parent2, index2_2, used1)
+            index2_1 = (index2_1 + 1) % size
+        offspring1.append(city)
+        used1.add(city)
         
-    return offspring
+        #Alternate for offspring2 
+        if len(offspring2) < size:
+            if len(offspring2) % 2 == 0:
+                city = select_city(parent1, index1_1, used2)
+                index1_2 = (index1_2 + 1) % size
+            else: 
+                city = select_city(parent1, index1_2, used2)
+                index2_2 = (index2_2 + 1) % size
+            offspring2.append(city)
+            used2.add(city)
+            
+    return offspring1, offspring2
     
 
     
