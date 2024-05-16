@@ -27,7 +27,7 @@ def ga(initializer,
     elitism=True,
     og_matrix=False,
     maximize=True,
-    verbose=True):    
+    verbose=False):    
     # initialize the population
     population = initializer(population_size)
     

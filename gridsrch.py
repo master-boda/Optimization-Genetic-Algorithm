@@ -1,6 +1,5 @@
 import random
 import numpy as np
-
 import sys
 import os
 from copy import deepcopy
@@ -15,7 +14,6 @@ import statistics as stat
 from typing import Callable, Dict, List, Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 
 from main.genetic_algorithm import *
 from pop.population import *
@@ -33,18 +31,16 @@ def run_algorithm(args):
 
     Returns:
         float: The best fitness value obtained from the algorithm.
-
     """
     algorithm, params = args
     try:
         _, _, _, best_fit = algorithm(**params)
         return best_fit
     except Exception as e:
-        # print(f"Error message: {str(e)}")
+        print(f"Error in run_algorithm: {str(e)}")
         return -1
 
-def grid_search( ga_variation: Callable, num_runs: int, parameter_options: dict[str, list[any]]) -> dict[
-    str, dict[str, any]]:
+def grid_search(ga_variation: Callable, num_runs: int, parameter_options: Dict[str, List[Any]]) -> Dict[str, Dict[str, Any]]:
     """
     Explore various parameter combinations to optimize the performance of a genetic algorithm.
 
@@ -60,7 +56,7 @@ def grid_search( ga_variation: Callable, num_runs: int, parameter_options: dict[
                                    Each result entry includes the model parameters, average fitness,
                                    and standard deviation.
     """
-    # Multiprocess to improve efficiency
+    # Use multiprocessing to improve efficiency
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
     # Prepare the combinations to be tested
@@ -68,21 +64,17 @@ def grid_search( ga_variation: Callable, num_runs: int, parameter_options: dict[
     values = parameter_options.values()
     combinations = list(product(*values))
 
-    # Initialise lists for storing metrics
+    # Initialize lists for storing metrics
     model_combs = []
     avg_fit = []
     avg_std = []
 
     print(f"There are {len(combinations)} possible combinations...\nStarted!")
 
-    i = 0
-    for combination in combinations:
+    for i, combination in enumerate(combinations):
         # Prepare the parameter dictionary for the combination
         params = dict(zip(keys, combination))
         model_combs.append(params)
-
-        # Initialise lists for metrics of each iteration
-        final_fits = []
 
         # Find the combinations with the best metrics
         results = pool.map(run_algorithm, [(ga_variation, params)] * num_runs)
@@ -90,58 +82,53 @@ def grid_search( ga_variation: Callable, num_runs: int, parameter_options: dict[
 
         # Calculate metrics only if there are valid fitness values
         if -1 in final_fits:
-            print('Invalid combination in:', combination)
+            print(f'Invalid combination in: {combination}')
             avg_fit.append(999)  # Assign 999 as a placeholder
             avg_std.append(999)  # Assign 999 as a placeholder
-
         else:
             avg_fit.append(stat.mean(final_fits))
             avg_std.append(stat.stdev(final_fits))
 
         # Clear memory
         del final_fits, results
+        gc.collect()
 
         if i % 10 == 0:
             print(f'{i} combinations were completed as of now!')
 
-        i += 1
-
     print('Combinations concluded! ')
     print('The results shall be displayed...')
 
-    fittest = model_combs[avg_fit.index(min(avg_fit))]
-    consistent = model_combs[avg_std.index(min(avg_std))]
+    fittest_idx = avg_fit.index(min(avg_fit))
+    consistent_idx = avg_std.index(min(avg_std))
 
-    results = {'Fittest': {'model_parameters': fittest,
-                           'avg_fit': avg_fit[model_combs.index(fittest)],
-                           'std': avg_std[model_combs.index(fittest)]},
-               'Most consistent': {'model_parameters': consistent,
-                                   'avg_fit': avg_fit[model_combs.index(consistent)],
-                                   'std': avg_std[model_combs.index(consistent)]}}
+    results = {
+        'Fittest': {
+            'model_parameters': model_combs[fittest_idx],
+            'avg_fit': avg_fit[fittest_idx],
+            'std': avg_std[fittest_idx]
+        },
+        'Most consistent': {
+            'model_parameters': model_combs[consistent_idx],
+            'avg_fit': avg_fit[consistent_idx],
+            'std': avg_std[consistent_idx]
+        }
+    }
 
     return results
 
-
 if __name__ == '__main__':
-    result = grid_search(ga, 20, {'initializer': [population],
-                                  'evaluator' : [fitness_function],
-                                  
-                                         #'pop_size': [50, 100, 500],
-                                        'selection': [rank_selection, tournament_selection,
-                                                      rank_selection],
-                                         'crossover_operator': [fast_ordered_mapped_crossover,
-                                                                ordered_crossover, 
-                                                                partially_mapped_crossover],
-                                        'mutation': [simple_mutation, scramble_mutation,
-                                                     displacement_mutation], 
-                                         'crossover_rate': [0.5, 0.8, 0.9],
-                                         'mutation_rate': [0.01, 0.05, 0.1, 0.2],
-                                         'elitism_size': [0, 1, 2, 5],
-                                         'verbose': [False],
-                                         'maximise': [True], 
-                                         #'log': [False],
-                                         #'path': [False],
-                                         #'plot': [False]
-                                         })
+    result = grid_search(ga, 20, {
+        'initializer': [population],
+        'evaluator': [fitness_function],
+        'selection': [rank_selection, tournament_selection, rank_selection],
+        'crossover': [fast_ordered_mapped_crossover, ordered_crossover, partially_mapped_crossover],
+        'mutation': [simple_mutation, scramble_mutation, displacement_mutation],
+        #'crossover_rate': [0.5, 0.8, 0.9],
+        #'mutation_rate': [0.01, 0.05, 0.1, 0.2],
+        #'elitism_size': [0, 1, 2, 5],
+        #'verbose': [False],
+        #'maximise': [True],
+    })
 
     print(result)
