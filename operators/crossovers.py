@@ -171,56 +171,49 @@ def cycle_crossover(parent1: list, parent2: list) -> tuple:
 
     return offspring1, offspring2
 
-def SequentialConstructiveCrossover(parent1, parent2):
-    def select_city(parent, start_index, used):
-        size = len(parent)
-        city = parent[start_index]
-        while city in used:
-            start_index = (start_index + 1) % size
-            city = parent[start_index]
-        return city
+def sequential_constructive_crossover(parent1, parent2):
+    """
+    This function performs Sequential Constructive Crossover (SCX) on two parent chromosomes 
+    and generates two offspring.
 
-    size = len(parent1)
-    
-    # Create two offspring lists
-    offspring1 = []
-    offspring2 = []
-    
-    # Create sets to track used cities
-    used1 = set()
-    used2 = set()
-    
-    # Initialize indices for both parents
-    index1_1 = 0
-    index1_2 = 0
-    index2_1 = 0
-    index2_2 = 0
-    
-    while len(offspring1) < size or len(offspring2) < size:
-        # Alternate selection for offspring1
-        if len(offspring1) < size:
-            if len(offspring1) % 2 == 0:
-                city = select_city(parent1, index1_1, used1)
-                index1_1 = (index1_1 + 1) % size
-            else:
-                city = select_city(parent2, index2_1, used1)
-                index2_1 = (index2_1 + 1) % size
-            offspring1.append(city)
-            used1.add(city)
-        
-        # Alternate selection for offspring2
-        if len(offspring2) < size:
-            if len(offspring2) % 2 == 0:
-                city = select_city(parent2, index1_2, used2)
-                index1_2 = (index1_2 + 1) % size
-            else:
-                city = select_city(parent1, index2_2, used2)
-                index2_2 = (index2_2 + 1) % size
-            offspring2.append(city)
-            used2.add(city)
-    
-    return offspring1, offspring2
-    
+    Args:
+        parent1 (list): The first parent chromosome (list representation).
+        parent2 (list): The second parent chromosome (list representation).
+
+    Returns:
+        tuple: A tuple containing two offspring chromosomes generated from SCX.
+    """
+    def generate_child(primary_parent, secondary_parent):
+        chromosome_length = len(primary_parent)
+        used_genes = set()
+        child = []
+        primary_index, secondary_index = 0, 0
+
+        for _ in range(chromosome_length):
+            # Select from primary parent
+            while primary_index < chromosome_length and primary_parent[primary_index] in used_genes:
+                primary_index += 1
+            if primary_index < chromosome_length:
+                gene = primary_parent[primary_index]
+                child.append(gene)
+                used_genes.add(gene)
+
+            # Select from secondary parent
+            while secondary_index < chromosome_length and secondary_parent[secondary_index] in used_genes:
+                secondary_index += 1
+            if secondary_index < chromosome_length and len(child) < chromosome_length:
+                gene = secondary_parent[secondary_index]
+                child.append(gene)
+                used_genes.add(gene)
+
+        return child
+
+    # Generate the first child using parent1 and parent2
+    child1 = generate_child(parent1, parent2)
+    # Generate the second child using parent2 and parent1
+    child2 = generate_child(parent2, parent1)
+
+    return child1, child2
 
     
     
