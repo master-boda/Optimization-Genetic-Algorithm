@@ -177,6 +177,8 @@ def sequential_constructive_crossover(parent1, parent2):
         while city in used:
             index = (index + 1) % len(parent)
             city = parent[index]
+            if len(used) == len(parent):  # all cities are used
+                break
         return city
 
     size = len(parent1)
