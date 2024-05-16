@@ -171,11 +171,6 @@ def cycle_crossover(parent1: list, parent2: list) -> tuple:
 
     return offspring1, offspring2
 
-def sequential_constructive_crossover(parent1, parent2): 
-    size = len(parent1)
-    offspring = []
-    used = set()
-    
 def select_city(parent,index,used): 
     city = parent[index]
     while city in used:
@@ -183,5 +178,29 @@ def select_city(parent,index,used):
         city = parent[index]
         
     return city
+
+def sequential_constructive_crossover(parent1, parent2): 
+    size = len(parent1)
+    offspring = []
+    used = set()
+    
+    index1 = 0
+    index2 = 0
+    
+    while len(offspring) < size:
+        #Alternate between parents
+        if len(offspring) % 2 == 0:
+            city = select_city(parent1,index1,used)
+            index1 = (index1 + 1) % size
+        else:
+            city = select_city(parent2,index2,used)
+            index2 = (index2 + 1) % size
+            
+        offspring.append(city)
+        used.add(city) #add used cities
+        
+    return offspring
+    
+
     
     
