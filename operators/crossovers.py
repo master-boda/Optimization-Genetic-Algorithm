@@ -160,10 +160,7 @@ def cycle_crossover(parent1, parent2):
     
     # Randomly select the starting position for the cycle
     start_pos = random.randint(0, size - 1)
-    print(start_pos)
     cycle = []
-    
-    # Identify the cycle in the parent permutations
     while True:
         cycle.append(start_pos)
         visited[start_pos] = True
@@ -174,7 +171,6 @@ def cycle_crossover(parent1, parent2):
         else:
             start_pos = next_pos
     
-    # Copy the cycle from parents to offspring
     for pos in cycle:
         offspring1[pos] = parent1[pos]
         offspring2[pos] = parent2[pos]
