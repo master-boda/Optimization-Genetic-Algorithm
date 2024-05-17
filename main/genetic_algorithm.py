@@ -82,10 +82,19 @@ def ga(initializer,
      fitnesses = [evaluator(ind, matrix) for ind in population]
           
      if verbose:
-         current_best_fitness = max(fitnesses) if maximize else max(fitnesses)
-         print(f'Generation {generation} best fitness: {current_best_fitness}')
-         print(f'Best individual: {population[np.argmax(fitnesses)]}')
-         
+        current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
+        best_individual = population[np.argmax(fitnesses)]
+        phenotypic_diversity = np.std(fitnesses)
+        genotypic_diversity_value = genotypic_diversity(population)
+    
+        print(f"{'-'*40}")
+        print(f"Generation {generation}")
+        print(f"{'-'*40}")
+        print(f"Best Fitness: {current_best_fitness}")
+        print(f"Best Individual: {best_individual}")
+        print(f"Phenotypic Diversity: {phenotypic_diversity:.2f}")
+        print(f"Genotypic Diversity: {genotypic_diversity_value:.2f}")
+        print(f"{'-'*40}\n")
     return population[np.argmax(fitnesses)], max(fitnesses)
 
 ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation)
