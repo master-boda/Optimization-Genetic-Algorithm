@@ -12,6 +12,8 @@ from tqdm import tqdm
 areas = ['D', 'FC', 'G', 'QS', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN']
 size = len(areas)
 geo_gain_matrix = geo_matrix_generator(min_value=-500, max_value=500,size=size)
+initializer = population
+evaluator = fitness_function
 fitness_scores = []
 
 # Defining the mappings
@@ -36,8 +38,8 @@ SELECTIONS = {
 
 # Defining the objective function 
 def objective(trial):
-    initializer = INITIALIZERS[trial.suggest_categorical('initializer', list(INITIALIZERS.keys()))]
-    evaluator = EVALUATORS[trial.suggest_categorical('evaluator', list(EVALUATORS.keys()))]
+    #initializer = INITIALIZERS[trial.suggest_categorical('initializer', list(INITIALIZERS.keys()))]
+    #evaluator = EVALUATORS[trial.suggest_categorical('evaluator', list(EVALUATORS.keys()))]
     crossover = CROSSOVERS[trial.suggest_categorical('crossover', list(CROSSOVERS.keys()))]
     mutation = MUTATIONS[trial.suggest_categorical('mutation', list(MUTATIONS.keys()))]
     population_size = trial.suggest_categorical('population_size', [50, 100, 200])
