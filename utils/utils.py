@@ -150,7 +150,9 @@ def genotypic_diversity(population):
     
     import numpy as np
 
-def fitness_shared(population, fitness_function):
+import numpy as np
+
+def fitness_shared(population):
     num_individuals = len(population)
     population_array = np.array(population)
     
@@ -167,3 +169,4 @@ def fitness_shared(population, fitness_function):
     ]
     
     return shared_fitness
+
