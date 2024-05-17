@@ -13,14 +13,13 @@ areas = ['D', 'FC', 'G', 'QS', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN']
 size = len(areas)
 geo_gain_matrix = geo_matrix_generator(min_value=-500, max_value=500,size=size)
 fitness_scores = []
-initializer = population
 
 # Defining the mappings
 INITIALIZERS = {'population': population}
 EVALUATORS = {'fitness_function': fitness_function}
 CROSSOVERS = {
-    'partially_mapped_crossover': partially_mapped_crossover,
-    'fast_ordered_mapped_crossover': fast_ordered_mapped_crossover,
+   'partially_mapped_crossover': partially_mapped_crossover,
+   'fast_ordered_mapped_crossover': fast_ordered_mapped_crossover,
     'ordered_crossover': ordered_crossover,
     'cycle_crossover': cycle_crossover
 }
@@ -47,7 +46,7 @@ def objective(trial):
     crossover_rate = trial.suggest_float('crossover_rate', 0.6, 0.9)
     elitism_size = trial.suggest_int('elitism_size', 1, 10)
     selection = SELECTIONS[trial.suggest_categorical('selection', list(SELECTIONS.keys()))]
-    
+
     # Running genetic algorithm with the different parameters
     solution, best_fitness = ga(initializer=initializer,
                                 evaluator=evaluator,
@@ -62,26 +61,21 @@ def objective(trial):
                                 verbose=False, 
                                 elitism=False, 
                                 matrix_to_use=geo_gain_matrix)
-
+    
     # Evaluating the given solution
     fitness_scores.append(best_fitness)
-    
+    print(solution)
     return best_fitness
 
 def optimize_optuna(n_trials):
     # Running and tuning parameters with Optuna optimization
     study = optuna.create_study(direction='maximize')
-
     # Use tqdm to create a progress bar
-    for _ in tqdm(range(n_trials), desc="Optimization Progress"):
-        study.optimize(lambda trial: objective(trial), n_trials=1)
+    #for _ in tqdm(range(n_trials), desc="Optimization Progress"):
+    study.optimize(lambda trial: objective(trial), n_trials=n_trials)
 
-    # Get the best parameters and their corresponding fitness
-    best_params = study.best_params
-    best_value = study.best_value
-
-    print("Best Parameters:", best_params)
-    print("Best Distance:", best_value)
+    print("Best Parameters:", study.best_params)
+    print("Best Fitness:", study.best_value)
 
     # Plot the evolution of fitness values
     plt.plot(fitness_scores, label='Fitness Scores')
