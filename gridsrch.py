@@ -15,7 +15,7 @@ from operators.mutators import *
 from operators.optimizations import *
 from utils.utils import *
 from tqdm import tqdm
-import time
+
 
 def generate_matrix_gs(seed):
     np.random.seed(seed)
@@ -23,10 +23,14 @@ def generate_matrix_gs(seed):
     return matrix
 
 def evaluate_combinations(combo):
-    seed, parameters = combo
-    matrix = generate_matrix_gs(seed)
-    best_individual, best_fitness = ga(**parameters, matrix_to_use=matrix, verbose=False)
-    return (parameters, best_fitness)
+    try:
+        seed, parameters = combo
+        matrix = generate_matrix_gs(seed)
+        best_individual, best_fitness = ga(**parameters, matrix_to_use=matrix, verbose=False)
+        return (parameters, best_fitness)
+    except Exception as e:
+        print(f"Error in combination {parameters}: {e}")
+        return (parameters, float('inf'))
 
 def perform_grid_search(param_grid, n_seeds=15):
     seeds = [np.random.randint(1, 10000) for _ in range(n_seeds)]
@@ -39,10 +43,7 @@ def perform_grid_search(param_grid, n_seeds=15):
     with tqdm(total=len(combos_with_seeds)) as pbar, Pool() as pool:
         for i, combo in enumerate(combos_with_seeds):
             pbar.set_description(f"Running combination {i+1}/{len(combos_with_seeds)}")
-            start_time = time.time()
             results.append(pool.apply_async(evaluate_combinations, (combo,)))
-            elapsed_time = time.time() - start_time
-            pbar.set_postfix({"Elapsed Time": f"{elapsed_time:.2f}s"})
             pbar.update(1)
 
         # Wait for all processes to finish and get the results
@@ -63,9 +64,9 @@ def perform_grid_search(param_grid, n_seeds=15):
     best_combo = max(average_scores, key=average_scores.get)
     print("Overall best combination:", dict(best_combo))
     print("Average fitness:", average_scores[best_combo])
-    
-    
-param_grid = {
+
+if __name__ == '__main__':
+    param_grid = {
     'initializer': [population],
     'evaluator': [fitness_function],
     'population_size': [50, 100],
@@ -78,16 +79,4 @@ param_grid = {
     'mutation': [simple_mutation, scramble_mutation],
 }
 
-param_grid = {
-    'initializer': [population],
-    'evaluator': [fitness_function],
-    'population_size': [1],
-    'num_generations': [1],
-    'mutation_rate': [0],
-    'crossover_rate': [0],
-    'elitism_size': [1],
-    'selection': [tournament_selection, roulette_selection, rank_selection],
-    'crossover': [partially_mapped_crossover, fast_order_mapped_crossover, order_crossover, cycle_crossover],
-    'mutation': [simple_mutation, scramble_mutation],}
-
-perform_grid_search(param_grid, n_seeds=15)
+    perform_grid_search(param_grid, n_seeds=15)
