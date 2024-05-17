@@ -75,19 +75,18 @@ def displacement_mutation(individual: list, rate: float) -> list:
         size = len(individual)
         
         # Choose start and end indices for the segment to be displaced, avoiding the first and last positions
-        start, end = sorted(random.sample(range(1, size-1), 2))
+        start, end = sorted(random.sample(range(1, size - 1), 2))
         
         # Extract the segment
-        segment = individual[start:end]
+        segment = individual[start:end + 1]
         
         # Remove the segment from the original position
-        del individual[start:end]
+        remaining_individual = individual[:start] + individual[end + 1:]
         
-        # Ensure the insert position range is valid
-        if len(individual) - len(segment) > 1:
-            insert_position = random.choice(range(1, len(individual) - len(segment)))
-            
-            # Reinsert the segment at the new position
-            individual = individual[:insert_position] + segment + individual[insert_position:]
+        # Choose a new insertion position, avoiding the start and end of the list
+        insert_position = random.choice(range(1, len(remaining_individual)))
+        
+        # Reinsert the segment at the new position
+        individual = remaining_individual[:insert_position] + segment + remaining_individual[insert_position:]
 
     return individual
