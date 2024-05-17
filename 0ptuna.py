@@ -15,8 +15,8 @@ from main.genetic_algorithm import *
 
 # Stationary parameters
 areas = ['D', 'FC', 'G', 'QS', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN']
-geo_gain_matrix = geo_matrix_generator(min_value=-500, max_value=500, size=len(areas), seed=42)
-initializer = population(30)
+geo_gain_matrix = geo_matrix_generator(min_value=-500, max_value=500, size=len(areas))
+initializer = population(50)
 #evaluator = evaluate_population(geo_gain_matrix)
 #elite_func = get_n_elites(3)
 selection_pressure = 5
@@ -33,7 +33,7 @@ def objective(trial):
     mutation = trial.suggest_categorical('mutation', [simple_mutation, scramble_mutation, displacement_mutation])
     population_size = trial.suggest_categorical('population_size', [50, 100, 200])
     num_generations = trial.suggest_categorical('num_generations', [50, 100, 200])
-    mutation_rate = trial.suggest_float('mutation_rate', 0.01, 0.4, log=True)
+    mutation_rate = trial.suggest_float('mutation_rate', 0.01, 0.6, log=True)
     crossover_rate = trial.suggest_float('crossover_rate', 0.6, 0.9)
     elitism_size = trial.suggest_int('elitism_size', 1, 10)
     selection = trial.suggest_categorical('selection', [roulette_selection, rank_selection, tournament_selection])
