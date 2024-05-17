@@ -40,7 +40,7 @@ def perform_grid_search(param_grid, n_seeds=15):
     combos_with_seeds = [(seed, combo) for seed in seeds for combo in combinations]
 
     results = []
-    with tqdm(total=len(combos_with_seeds)) as pbar, Pool() as pool:
+    with tqdm(total=len(combos_with_seeds)) as pbar, Pool() as pool, open('grid_search_results.csv', 'w', newline='') as f:
         for i, combo in enumerate(combos_with_seeds):
             pbar.set_description(f"Running combination {i+1}/{len(combos_with_seeds)}")
             results.append(pool.apply_async(evaluate_combinations, (combo,)))
@@ -69,8 +69,8 @@ if __name__ == '__main__':
     param_grid = {
     'initializer': [population],
     'evaluator': [fitness_function],
-    'population_size': [50, 100],
-    'num_generations': [50, 100],
+    'population_size': [50, 100, 200],
+    'num_generations': [50, 100, 200],
     'mutation_rate': [0.05],
     'crossover_rate': [0.8],
     'elitism_size': [2, 5],
