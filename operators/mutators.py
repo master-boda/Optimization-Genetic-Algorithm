@@ -28,13 +28,13 @@ def simple_mutation(individual: list, rate: float) -> list:
     return individual
 
 
-def scramble_mutation(individual: list, rate: float) -> list:
+def inversion_mutation(individual: list, rate: float) -> list:
     """
-    Perform a scramble mutation on a genetic algorithm individual with a given probability.
+    Perform an inversion mutation on a genetic algorithm individual with a given probability.
 
     This mutation randomly selects a contiguous segment of the individual (excluding the 
-    first and last elements, which are fixed as 'D') and shuffles the elements within 
-    this segment. This introduces variability while maintaining the start and end points.
+    first and last elements, which are fixed as 'D') and reverses the order of the elements 
+    within this segment. This introduces variability while maintaining the start and end points.
 
     Parameters:
     individual (list): The individual to mutate. It must start and end with 'D'.
@@ -47,14 +47,9 @@ def scramble_mutation(individual: list, rate: float) -> list:
         size = len(individual)
         
         # Choose the start and end indices of the segment to scramble, ensuring they are within bounds
-        start, end = sorted(random.sample(range(1, size-1), 2))
+        point1, point2 = sorted(random.sample(range(1, size-1), 2))
         
-        # Extract the segment and shuffle it
-        segment = individual[start:end]
-        random.shuffle(segment)
-        
-        # Replace the original segment with the shuffled segment
-        individual[start:end] = segment
+        individual = individual[:point1] + individual[point1:point2+1][::-1] + individual[point2+1:]
 
     return individual
 

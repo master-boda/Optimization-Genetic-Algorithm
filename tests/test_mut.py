@@ -11,4 +11,4 @@ test_buddy = generate_individual()
 
 
 print(test_buddy)
-print(displacement_mutation(test_buddy, 0.5))
+print(inversion_mutation(test_buddy, 1))
