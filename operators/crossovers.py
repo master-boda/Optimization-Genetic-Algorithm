@@ -31,7 +31,7 @@ def partially_mapped_crossover(parent1: list, parent2: list) -> tuple:
     
     return offspring1, offspring2
 
-def fast_ordered_mapped_crossover(parent1: list, parent2: list) -> tuple:
+def fast_order_mapped_crossover(parent1: list, parent2: list) -> tuple:
     """
     Performs a Fast Ordered Mapped Crossover (FOMX) on two parent genomes.
 
@@ -88,7 +88,7 @@ def fast_ordered_mapped_crossover(parent1: list, parent2: list) -> tuple:
 
 
 
-def ordered_crossover(parent1: list, parent2: list) -> tuple:
+def order_crossover(parent1: list, parent2: list) -> tuple:
     """
     Perform an ordered crossover between two parents to generate two offspring.
 
