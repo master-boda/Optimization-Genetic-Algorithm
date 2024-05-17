@@ -136,22 +136,6 @@ def genotypic_diversity(population):
 
     return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
 
-   def fs_beta(population, fitness_function):
-        num_individuals = len(population)
-        population_array = np.array(population)
-        total_distance = 0
-        for i in range(num_individuals - 1):
-            for j in range(i + 1, num_individuals):
-                total_distance += np.linalg.norm(population_array[i] - population_array[j])
-        normalized_distances = total_distance / (num_individuals * (num_individuals - 1) / 2)
-        sharing_coefficients = np.sum(normalized_distances)
-        shared_fitness = [fitness_function(individual) / sharing_coefficients for individual in population]
-        return shared_fitness
-    
-    import numpy as np
-
-import numpy as np
-
 def fitness_shared(population):
     num_individuals = len(population)
     population_array = np.array(population)
