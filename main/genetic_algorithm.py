@@ -86,6 +86,6 @@ def ga(initializer,
          print(f'Generation {generation} best fitness: {current_best_fitness}')
          print(f'Best individual: {population[np.argmax(fitnesses)]}')
          
-    return population[np.argmin(fitnesses)], min(fitnesses)
+    return population[np.argmax(fitnesses)], max(fitnesses)
 
 ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation)
