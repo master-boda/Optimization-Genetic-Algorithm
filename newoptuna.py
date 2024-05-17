@@ -28,7 +28,7 @@ CROSSOVERS = {
 MUTATIONS = {
     'simple_mutation': simple_mutation,
     'scramble_mutation': scramble_mutation,
-    'displacement_mutation': displacement_mutation
+    #'displacement_mutation': displacement_mutation
 }
 SELECTIONS = {
     'roulette_selection': roulette_selection,

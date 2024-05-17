@@ -1,149 +1,82 @@
-import random
 import numpy as np
 import sys
 import os
-from copy import deepcopy
-import gc
-import multiprocessing
-
-from itertools import product
-import statistics as stat
-from typing import Callable, Dict, List, Any
+import itertools
+from multiprocessing import Pool
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from main import genetic_algorithm as ga
-from pop import population as pop
-from operators import selection_algorithms as sel
-from operators import crossovers as cross
-from operators import mutators as mut
-from operators import optimizations as opt
-from utils import utils
 
-def run_algorithm(args):
-    """Runs an algorithm with the given parameters and returns the best fitness value.
+from main.genetic_algorithm import *
+from pop.population import *
+from operators.selection_algorithms import *
+from operators.crossovers import *
+from operators.mutators import *
+from operators.optimizations import *
+from utils.utils import *
+from tqdm import tqdm
 
-    Args:
-        args (tuple): A tuple containing the algorithm function, its parameters, and the geo_matrix.
 
-    Returns:
-        float: The best fitness value obtained from the algorithm.
-    """
-    algorithm, params, geo_matrix = args
+def generate_matrix_gs(seed):
+    np.random.seed(seed)
+    matrix = geo_matrix_generator(seed=seed)
+    return matrix
+
+def evaluate_combinations(combo):
     try:
-        # Execute the algorithm
-        result = algorithm(**params)
-        
-        # Ensure the result has the expected structure
-        if isinstance(result, tuple) and len(result) == 4:
-            _, _, best_solution, best_fitness = result
-            best_fitness = utils.fitness_function(best_solution, geo_matrix)
-            return best_fitness
-        else:
-            raise ValueError("Algorithm did not return the expected result structure")
+        seed, parameters = combo
+        matrix = generate_matrix_gs(seed)
+        best_individual, best_fitness = ga(**parameters, matrix_to_use=matrix, verbose=False)
+        return (parameters, best_fitness)
     except Exception as e:
-        print(f"Error in run_algorithm: {str(e)}")
-        return -1
+        print(f"Error in combination {parameters}: {e}")
+        return (parameters, float('inf'))
 
-def grid_search(ga_variation: Callable, num_runs: int, parameter_options: Dict[str, List[Any]], geo_matrix: List[List[int]]) -> Dict[str, Dict[str, Any]]:
-    """
-    Explore various parameter combinations to optimize the performance of a genetic algorithm.
+def perform_grid_search(param_grid, n_seeds=15):
+    seeds = [np.random.randint(1, 10000) for _ in range(n_seeds)]
+    combinations = [dict(zip(param_grid.keys(), values)) for values in itertools.product(*param_grid.values())]
+    
+    # Prepare combination and seed pairs for grid search
+    combos_with_seeds = [(seed, combo) for seed in seeds for combo in combinations]
 
-    Args:
-        ga_variation (Callable): The genetic algorithm variation to be optimized.
-        num_runs (int): The number of iterations to be executed for each parameter combination.
-        parameter_options (Dict[str, List[Any]]): A dictionary specifying the parameter names as keys
-                                                   and a list of potential values for each parameter.
-        geo_matrix (List[List[int]]): The Geo matrix to be used for the fitness calculation.
+    results = []
+    with tqdm(total=len(combos_with_seeds)) as pbar, Pool() as pool, open('grid_search_results.csv', 'w', newline='') as f:
+        for i, combo in enumerate(combos_with_seeds):
+            pbar.set_description(f"Running combination {i+1}/{len(combos_with_seeds)}")
+            results.append(pool.apply_async(evaluate_combinations, (combo,)))
+            pbar.update(1)
 
-    Returns:
-        Dict[str, Dict[str, Any]]: A dictionary containing the search results, including the combination
-                                   with the highest average fitness and the most consistent results.
-                                   Each result entry includes the model parameters, average fitness,
-                                   and standard deviation.
-    """
-    # Use multiprocessing to improve efficiency
-    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+        # Wait for all processes to finish and get the results
+        results = [result.get() for result in results]
 
-    # Prepare the combinations to be tested
-    keys = parameter_options.keys()
-    values = parameter_options.values()
-    combinations = list(product(*values))
+    # Aggregate results
+    combination_scores = {}
+    for (parameters, fitness) in results:
+        combo_key = tuple(sorted(parameters.items()))  # Create a hashable representation of the dictionary
+        if combo_key not in combination_scores:
+            combination_scores[combo_key] = []
+        combination_scores[combo_key].append(fitness)
 
-    # Initialize lists for storing metrics
-    model_combs = []
-    avg_fit = []
-    avg_std = []
+    # Calculate average fitness for each combination
+    average_scores = {combo: np.mean(scores) for combo, scores in combination_scores.items()}
 
-    print(f"There are {len(combinations)} possible combinations...\nStarted!")
-
-    for i, combination in enumerate(combinations):
-        # Prepare the parameter dictionary for the combination
-        params = dict(zip(keys, combination))
-        model_combs.append(params)
-
-        # Prepare the arguments for the run_algorithm function
-        run_args = [(ga_variation, params, geo_matrix)] * num_runs
-
-        # Find the combinations with the best metrics
-        results = pool.map(run_algorithm, run_args)
-        final_fits = results
-
-        # Calculate metrics only if there are valid fitness values
-        if -1 in final_fits or not final_fits:
-            print(f'Invalid combination in: {combination}')
-            avg_fit.append(float('inf'))  # Use infinity as a placeholder for invalid combinations
-            avg_std.append(float('inf'))  # Use infinity as a placeholder for invalid combinations
-        else:
-            avg_fit.append(stat.mean(final_fits))
-            avg_std.append(stat.stdev(final_fits))
-
-        # Clear memory
-        del final_fits, results
-        gc.collect()
-
-        if i % 10 == 0:
-            print(f'{i} combinations were completed as of now!')
-
-    print('Combinations concluded! ')
-    print('The results shall be displayed...')
-
-    pool.close()
-    pool.join()
-
-    fittest_idx = avg_fit.index(min(avg_fit))
-    consistent_idx = avg_std.index(min(avg_std))
-
-    results = {
-        'Fittest': {
-            'model_parameters': model_combs[fittest_idx],
-            'avg_fit': avg_fit[fittest_idx],
-            'std': avg_std[fittest_idx]
-        },
-        'Most consistent': {
-            'model_parameters': model_combs[consistent_idx],
-            'avg_fit': avg_fit[consistent_idx],
-            'std': avg_std[consistent_idx]
-        }
-    }
-
-    return results
+    # Find the combination with the highest average fitness
+    best_combo = max(average_scores, key=average_scores.get)
+    print("Overall best combination:", dict(best_combo))
+    print("Average fitness:", average_scores[best_combo])
 
 if __name__ == '__main__':
-    # Generate the Geo matrix using the geo_matrix_generator
-    geo_matrix = utils.geo_matrix_generator(min_value=-500, max_value=500, size=10)
-    
-    result = grid_search(ga.ga, 20, {
-        'initializer': [pop.population],
-        'evaluator': [utils.fitness_function],
-        'selection': [sel.rank_selection, sel.tournament_selection],
-        'crossover': [cross.fast_ordered_mapped_crossover, cross.ordered_crossover, cross.partially_mapped_crossover],
-        'mutation': [mut.simple_mutation, mut.scramble_mutation, mut.displacement_mutation],
-        'crossover_rate': [0.5],
-        'mutation_rate': [0.05],
-        'elitism_size': [2],
-        'verbose': [False],
-        'maximize': [True],
-    }, geo_matrix)
+    param_grid = {
+    'initializer': [population],
+    'evaluator': [fitness_function],
+    'population_size': [50, 100, 200],
+    'num_generations': [50, 100, 200],
+    'mutation_rate': [0.05],
+    'crossover_rate': [0.8],
+    'elitism_size': [2, 5],
+    'selection': [tournament_selection, roulette_selection, rank_selection],
+    'crossover': [partially_mapped_crossover, fast_order_mapped_crossover, order_crossover, cycle_crossover],
+    'mutation': [simple_mutation, scramble_mutation],
+}
 
-    print(result)
+    perform_grid_search(param_grid, n_seeds=15)

@@ -14,43 +14,42 @@ from pop.population import *
 from utils.utils import *
 
 def ga(initializer,
-       evaluator,
-       selection,
-       crossover,
-       mutation,
-       matrix_to_use=None,
-       mutation_rate=0.05,
-       population_size=200,
-       num_generations=50,   
-       crossover_rate=0.8,
-       elitism_size=2,
-       elitism=True,
-       #og_matrix=False,
-       maximize=True,
-       verbose=False):    
-    # Initialize the population
+    evaluator,
+    selection,
+    crossover,
+    mutation,
+    matrix_to_use=None,
+    matrix_seed=None,
+    mutation_rate=0.05,
+    population_size=200,
+    num_generations=50,
+    crossover_rate=0.8,
+    elitism_size=2,
+    elitism=True,
+    verbose=True):   
+    # initialize the population
     population = initializer(population_size)
     
-    # Select the Geo matrix to use (original=True uses the original matrix from the project instructions)
+    # select the Geo matrix to use (original=True uses the original matrix from the project instructions)
     if matrix_to_use is None:
-        matrix = geo_matrix_generator()
+        matrix = geo_matrix_generator(seed=matrix_seed)
     else:
-        matrix = matrix_to_use
-
-    # Compute fitness for each individual in the population
+        matrix = np.array(matrix_to_use)
+            
+    # compute fitness for each individual in the population
     fitnesses = [evaluator(ind, matrix) for ind in population]
     
     if verbose:
-        print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
-        print(f'Population size: {population_size}')
-        print(f'Number of generations: {num_generations}')
-        # print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix.head(15)}')
+     print(f'Initial best fitness: {max(fitnesses)}') 
+     print(f'Population size: {population_size}')
+     print(f'Number of generations: {num_generations}')
+     print(f'Geo matrix: {matrix}')
     
     for generation in range(num_generations):    
      if elitism:
          # select the individuals to be carried over to the next generation
          sorted_indices = np.argsort(fitnesses)
-         sorted_indices = sorted_indices if maximize else sorted_indices[::-1]
+         sorted_indices = sorted_indices
          
          elite_indices = sorted_indices[-elitism_size:]
          
@@ -81,10 +80,8 @@ def ga(initializer,
      fitnesses = [evaluator(ind, matrix) for ind in population]
           
      if verbose:
-         current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
+         current_best_fitness = max(fitnesses)
          print(f'Generation {generation} best fitness: {current_best_fitness}')
          print(f'Best individual: {population[np.argmax(fitnesses)]}')
          
     return population[np.argmax(fitnesses)], max(fitnesses)
-
-ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation)
