@@ -234,27 +234,3 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
         matrix[index_G][index_FC] = geo_G_to_FC
 
     return matrix
-
-def genotypic_diversity(population):
-    """
-    Calculates the genotypic diversity of a population by comparing the number of different positions between every pair of individuals.
-
-    Parameters:
-    population (list): A list of individuals in the population.
-
-    Returns:
-    float: The average number of different positions between individuals in the population.
-    """
-    num_individuals = len(population)
-    num_positions = len(population[0])
-    total_diff_positions = 0
-
-    # Compare each pair of individuals
-    for i in range(num_individuals - 1):
-        for j in range(i + 1, num_individuals):
-            # Count differing positions
-            total_diff_positions += sum(population[i][k] != population[j][k] for k in range(num_positions))
-
-    # Calculate the average number of different positions
-    return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
-

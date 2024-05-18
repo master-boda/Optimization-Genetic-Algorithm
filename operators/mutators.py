@@ -56,33 +56,6 @@ def inversion_mutation(individual: list, rate: float) -> list:
 
     return individual
 
-def inversion_mutation(individual: list, rate: float) -> list:
-    """
-    Perform an inversion mutation on a genetic algorithm individual with a given probability.
-
-    This mutation randomly selects a contiguous segment of the individual (excluding the 
-    first and last elements, which are fixed as 'D') and reverses the order of the elements 
-    within this segment. This introduces variability while maintaining the start and end points.
-
-    Parameters:
-    individual (list): The individual to mutate. It must start and end with 'D'.
-    rate (float): The probability of the mutation being applied to the individual.
-
-    Returns:
-    list: The mutated individual, which may be unchanged if the mutation did not occur.
-    """
-    # Check if mutation should be applied based on the mutation rate
-    if random.random() < rate:
-        size = len(individual)
-        
-        # Choose the start and end indices of the segment to invert, ensuring they are within bounds
-        point1, point2 = sorted(random.sample(range(1, size - 1), 2))
-        
-        # Perform the inversion on the selected segment
-        individual = individual[:point1] + individual[point1:point2+1][::-1] + individual[point2+1:]
-
-    return individual
-
 
 def displacement_mutation(individual: list, rate: float) -> list:
     """
