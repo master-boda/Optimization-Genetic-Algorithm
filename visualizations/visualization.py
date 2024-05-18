@@ -1,6 +1,11 @@
 import plotly.graph_objs as go
 import plotly.express as px
 
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import numpy as np
+import random
+
 def plot_best_fitness_per_generation(best_fitness_history):
     """
     Plots the best fitness value per generation as a line chart.
@@ -42,13 +47,6 @@ def plot_fitness_histogram(initial_fitnesses, final_fitnesses):
                       template='plotly_white')
     fig.show()
 
-
-
-
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import numpy as np
-import random
 
 # Example data: Replace these with your actual game areas and Geo earnings/losses
 areas = ["D", "FC", "G", "QS", "QG", "CS", "KS", "RG", "DV", "SN"]

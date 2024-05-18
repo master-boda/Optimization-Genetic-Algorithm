@@ -1,8 +1,7 @@
-import random
-import numpy as np
-
 import sys
 import os
+import random
+import numpy as np
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -13,7 +12,9 @@ from operators.optimizations import *
 from pop.population import *
 from utils.utils import *
 from visualizations.visualization import *
+from visualizations.dashboard import run_dashboard
 
+# Genetic Algorithm Function
 def ga(initializer,
        evaluator,
        selection,
@@ -28,7 +29,8 @@ def ga(initializer,
        elitism_size=2,
        elitism=True,
        verbose=True,
-       visualize=True):
+       visualize=True,
+       dashboard=True):
     # Initialize the population
     population = initializer(population_size)
     
@@ -42,12 +44,17 @@ def ga(initializer,
     fitnesses = [evaluator(ind, matrix) for ind in population]
     
     if verbose:
-        print(f'Initial best fitness: {max(fitnesses)}') 
-        print(f'Population size: {population_size}')
-        print(f'Number of generations: {num_generations}')
-        print(f'Geo matrix: {matrix}')
+        print('RESULTS START')
+        print("="*50)
+        print(f"{'Initial Best Fitness:':<30} {max(fitnesses)}")
+        print(f"{'Population Size:':<30} {population_size}")
+        print(f"{'Number of Generations:':<30} {num_generations}")
+        print(f"{'Geo Matrix:':<30}")
+        print(matrix)
+        print("="*50)
     
     routes_per_generation = []  # Store routes here
+    fitness_per_generation = []  # Store fitness scores here
     
     for generation in range(num_generations):    
         if elitism:
@@ -80,12 +87,17 @@ def ga(initializer,
           
         if verbose:
             current_best_fitness = max(fitnesses)
-            print(f'Generation {generation} best fitness: {current_best_fitness}')
-            print(f'Best individual: {population[np.argmax(fitnesses)]}')
+            best_individual = population[np.argmax(fitnesses)]
+            print(f"\nGeneration {generation + 1:>3}")
+            print("-" * 50)
+            print(f"{'Best Fitness:':<20} {current_best_fitness}")
+            print(f"{'Best Individual:':<20} {best_individual}")
+            print("-" * 50)
         
-        # Store the best route of this generation
+        # Store the best route and fitness of this generation
         best_individual = population[np.argmax(fitnesses)]
         routes_per_generation.append(best_individual)
+        fitness_per_generation.append(current_best_fitness)
     
     # Get the best individual and its fitness
     best_individual, best_fitness = population[np.argmax(fitnesses)], max(fitnesses)
@@ -94,10 +106,24 @@ def ga(initializer,
     if visualize:
         visualize_routes(routes_per_generation, best_individual)
     
+    if dashboard:
+        print('INITIALIZING DASHBOARD....')
+        return routes_per_generation, fitness_per_generation, best_individual, best_fitness, matrix
+    
     return best_individual, best_fitness
 
+# Example call to ga function with dashboard parameter
+if __name__ == "__main__":
+    result = ga(
+        population,
+        fitness_function,
+        roulette_selection,
+        order_crossover,
+        inversion_mutation,
+        dashboard=True
+    )
 
-         
-#return population[np.argmax(fitnesses)], max(fitnesses)
-
-print(ga(population, fitness_function, roulette_selection, order_crossover, inversion_mutation))
+    if isinstance(result, tuple) and len(result) == 5: #aqui para ver se corre o dash, visto que o output só tem len 5 se o coiso tiver True
+        routes, fitnesses, best_route, best_fitness, matrix = result
+        # Call the dashboard function with the GA results only if dashboard=True
+        run_dashboard(routes, fitnesses, best_route, matrix)

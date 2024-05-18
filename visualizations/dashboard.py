@@ -3,10 +3,7 @@ from dash import dcc, html
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 
-# Dados fictícios para visualização
-iterations = list(range(10))
-fitness_scores = [10, 15, 20, 18, 25, 30, 28, 35, 40, 45]
-
+# Define areas and coordinates
 areas = ["D", "FC", "G", "QS", "QG", "CS", "KS", "RG", "DV", "SN"]
 coordinates = {
     "D": (0, 0),
@@ -21,22 +18,27 @@ coordinates = {
     "SN": (8, 5)
 }
 
-# Função para gerar dados de rotas fictícias
-def generate_routes(num_routes):
-    import random
-    routes = []
-    for _ in range(num_routes):
-        route = areas.copy()
-        random.shuffle(route)
-        route = ["D"] + route + ["D"]
-        routes.append(route)
-    return routes
+# Create a Heatmap Figure Function
+def create_heatmap_figure(matrix, title):
+    heatmap = go.Heatmap(
+        z=matrix,
+        x=areas,
+        y=areas,
+        colorscale='Viridis'
+    )
+    layout = go.Layout(
+        title=title,
+        xaxis=dict(title='Areas'),
+        yaxis=dict(title='Areas'),
+        showlegend=False,
+        autosize=False,
+        width=600,
+        height=600,
+        margin=dict(l=100, r=100, t=100, b=100)
+    )
+    return go.Figure(data=[heatmap], layout=layout)
 
-# Dados de exemplo
-routes = generate_routes(10)
-best_route = routes[-1]
-
-# Função para criar o gráfico de uma rota
+# Function to create the route figure
 def create_route_figure(route, title, color='skyblue'):
     x = [coordinates[area][0] for area in route]
     y = [coordinates[area][1] for area in route]
@@ -57,49 +59,84 @@ def create_route_figure(route, title, color='skyblue'):
     )
     return go.Figure(data=[trace], layout=layout)
 
-app = dash.Dash(__name__)
+# Function to create the fitness evolution figure
+def create_fitness_evolution_figure(iterations, fitness_scores):
+    trace = go.Scatter(
+        x=iterations,
+        y=fitness_scores,
+        mode='lines+markers',
+        name='Fitness Score'
+    )
+    layout = go.Layout(
+        title='Fitness Score Evolution',
+        xaxis=dict(title='Generation'),
+        yaxis=dict(title='Fitness Score'),
+        showlegend=True
+    )
+    return go.Figure(data=[trace], layout=layout)
 
-app.layout = html.Div(children=[
-    html.H1(children='Dashboard de Visualização de Otimização'),
+# Function to run the Dash dashboard
+def run_dashboard(routes, fitnesses, best_route, matrix):
+    # Initialize Dash app
+    app = dash.Dash(__name__)
 
-    dcc.Graph(
-        id='fitness-graph',
-        figure={
-            'data': [
-                go.Scatter(
-                    x=iterations,
-                    y=fitness_scores,
-                    mode='lines+markers',
-                    name='Fitness Score'
-                )
-            ],
-            'layout': {
-                'title': 'Progresso da Otimização'
-            }
-        }
-    ),
-    html.Div([
-        dcc.Slider(
-            id='generation-slider',
-            min=0,
-            max=len(routes) - 1,
-            value=0,
-            marks={i: f'Gen {i+1}' for i in range(len(routes))},
-            step=None
-        )
-    ], style={'width': '80%', 'padding': '0px 20px 20px 20px'}),
-    dcc.Graph(id='route-graph'),
-    dcc.Graph(id='best-route-graph')
-])
+    # Generate slider marks without text
+    slider_marks = {i: '' for i in range(len(routes))}
 
-@app.callback(
-    [Output('route-graph', 'figure'), Output('best-route-graph', 'figure')],
-    [Input('generation-slider', 'value')]
-)
-def update_route_graph(selected_generation):
-    route_figure = create_route_figure(routes[selected_generation], f'Generation {selected_generation + 1}')
-    best_route_figure = create_route_figure(best_route, 'Best Route', color='limegreen')
-    return route_figure, best_route_figure
+    # App layout
+    app.layout = html.Div(children=[
+        html.H1(
+            children='Hallow Knight Route Optimization',
+            style={'textAlign': 'center', 'fontFamily': 'Arial, sans-serif'}
+        ),
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+        html.H4(
+            children='Francisco Batista; Vicente Miranda; Lourenço Mourão Martins; Cícero Dias dos Santos',
+            style={'textAlign': 'center', 'paddingBottom': '20px', 'fontFamily': 'Arial, sans-serif'}
+        ),
+
+        html.Div([
+            dcc.Slider(
+                id='generation-slider',
+                min=0,
+                max=len(routes) - 1,
+                value=0,
+                marks=slider_marks,
+                step=1,
+                updatemode='drag'
+            ),
+            html.Div(id='slider-output', style={'paddingTop': '10px'})
+        ], style={'width': '80%', 'padding': '0px 20px 20px 20px', 'margin': 'auto'}),
+        html.Div([
+            dcc.Graph(id='route-graph'),
+            dcc.Graph(id='best-route-graph')
+        ], style={'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center'}),
+        html.Div([
+            dcc.Graph(
+                id='heatmap-graph',
+                figure=create_heatmap_figure(matrix, 'Geo Earnings/Loss Matrix')
+            ),
+            dcc.Graph(
+                id='fitness-evolution-graph',
+                figure=create_fitness_evolution_figure(list(range(len(fitnesses))), fitnesses)
+            )
+        ], style={'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center'})
+    ], style={'textAlign': 'center', 'maxWidth': '1200px', 'margin': 'auto', 'fontFamily': 'Arial, sans-serif'})
+
+    # Callback to update the route graph based on the selected generation
+    @app.callback(
+        [Output('route-graph', 'figure'), Output('best-route-graph', 'figure'), Output('slider-output', 'children')],
+        [Input('generation-slider', 'value')]
+    )
+    def update_route_graph(selected_generation):
+        route_figure = create_route_figure(routes[selected_generation], f'Generation {selected_generation + 1}')
+        best_route_figure = create_route_figure(best_route, 'Best Route', color='limegreen')
+        best_fitness_score = max(fitnesses)
+        return route_figure, best_route_figure, f'Current Generation: {selected_generation + 1}, Best Fitness Score: {best_fitness_score}'
+
+    # Run the app
+    app.run_server(debug=False)
+
+# Example usage:
+# if __name__ == '__main__':
+#     run_dashboard(routes, fitnesses, best_route, matrix)
