@@ -80,7 +80,7 @@ def ga(initializer,
      fitnesses = [evaluator(ind, matrix) for ind in population]
           
      if verbose:
-        current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
+        current_best_fitness = max(fitnesses)
         best_individual = population[np.argmax(fitnesses)]
         phenotypic_diversity = np.std(fitnesses)
         genotypic_diversity_value = genotypic_diversity(population)
