@@ -28,7 +28,8 @@ def ga(initializer,
     elitism=True,
     og_matrix=False,
     maximize=True,
-    verbose=True):    
+    verbose=True,
+    fitness_sharing=True):    
     # initialize the population
     population = initializer(population_size)
     
@@ -80,10 +81,13 @@ def ga(initializer,
          
      population = offspring[:population_size]
      fitnesses = [evaluator(ind, matrix) for ind in population]
+     
+     if generation < num_generations - 1 and fitness_sharing:
+         fitnesses = fitness_shared(population, fitnesses)
           
      if verbose:
          current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
-         print(f'Generation {generation} best fitness: {current_best_fitness}')
+         print(f'Generation {generation} best fitness {"(lowered due to sharing)" if fitness_sharing==True and generation<49 else ""}: {current_best_fitness}')
          print(f'Best individual: {population[np.argmax(fitnesses)]}')
          
     return population[np.argmin(fitnesses)], min(fitnesses)

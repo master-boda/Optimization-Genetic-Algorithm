@@ -64,9 +64,96 @@ def fitness_function(route, geo_matrix):
     else:
         return invalid_penalty
 
+def genotypic_diversity(population):
+    """
+    Calculates the genotypic diversity of a population by comparing the number of different positions between every pair of individuals.
+    
+    Parameters:
+    population (list): A list of individuals in the population.
+    
+    Returns:
+    float: The average number of different positions between individuals in the population.
+    """
+    num_individuals = len(population)
+    num_positions = len(population[0])
+    total_diff_positions = 0
 
+    for i in range(num_individuals - 1):
+        for j in range(i + 1, num_individuals):
+            total_diff_positions += sum(population[i][k] != population[j][k] for k in range(num_positions))
 
+    return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
 
+def individual_genotypic_diversity(individual, population):
+    """
+    Calculates the genotypic diversity of a single individual by comparing the number of different positions 
+    between the individual and every other individual in the population.
+
+    Parameters:
+    individual (list): The individual for which the genotypic diversity is to be calculated.
+    population (list): A list of individuals in the population.
+
+    Returns:
+    float: The average number of different positions between the individual and the rest of the population.
+    """
+    num_individuals = len(population)
+    num_positions = len(individual)
+    total_diff_positions = 0
+
+    for other_individual in population:
+        total_diff_positions += sum(individual[k] != other_individual[k] for k in range(num_positions))
+
+    return total_diff_positions / num_individuals
+
+def fitness_shared(population, fitnesses, sigma_share=1.0):
+    """
+    Calculates the shared fitness of a population based on genotypic diversity.
+
+    Parameters:
+    population (list of list of str): The population of routes, where each route is a list of area initials.
+    fitnesses (list of float): The fitness values of the population.
+    sigma_share (float): The sharing threshold, which normalizes distances and controls the influence range.
+
+    Returns:
+    list of float: The shared fitness for each individual in the population.
+    """
+    num_individuals = len(population)
+
+    def linear_sharing_function(distance, sigma_share):
+        normalized_distance = distance / sigma_share
+        if normalized_distance < 1:
+            return 1 - normalized_distance
+        else:
+            return 0
+
+    # Step 1: Calculate the genotypic diversity distances for each individual
+    distances = np.zeros(num_individuals)
+    for i in range(num_individuals):
+        distances[i] = individual_genotypic_diversity(population[i], population)
+
+    # Step 2: Normalize the distances by dividing by the maximum distance
+    max_distance = np.max(distances)
+    if max_distance > 0:
+        distances /= max_distance
+
+    # Step 3: Apply the linear sharing function to each individual's distance
+    sharing_coefficients = np.zeros(num_individuals)
+    for i in range(num_individuals):
+        sharing_coefficients[i] = linear_sharing_function(distances[i], sigma_share)
+
+    # Step 4: Redefine the fitness
+    shared_fitnesses = []
+    for i in range(num_individuals):
+        if sharing_coefficients[i] == 0:
+            shared_fitness = fitnesses[i]
+        else:
+            #print(f'old fitness: {fitnesses[i]}')
+            #print(f'new fitness: {fitnesses[i] / (1 + sharing_coefficients[i])}')
+            #print(f'diversity: {distances[i]}')
+            shared_fitness = fitnesses[i] / (1 + sharing_coefficients[i])
+        shared_fitnesses.append(np.round(shared_fitness, 1))
+
+    return shared_fitnesses
 
 def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int = 10, seed: int = None) -> list[list[int]]:
     """
