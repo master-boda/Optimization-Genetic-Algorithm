@@ -220,20 +220,3 @@ def genotypic_diversity(population):
 
     return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
 
-def fitness_shared(population):
-    num_individuals = len(population)
-    population_array = np.array(population)
-    
-    total_distance = np.sum([
-        np.linalg.norm(population_array[i] - population_array[j])
-        for i in range(num_individuals - 1)
-        for j in range(i + 1, num_individuals)
-    ])
-    
-    normalized_distance = total_distance / (num_individuals * (num_individuals - 1) / 2)
-    shared_fitness = [
-        fitness_function(individual) / normalized_distance
-        for individual in population
-    ]
-    
-    return shared_fitness
