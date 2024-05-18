@@ -26,10 +26,7 @@ def ga(initializer,
     crossover_rate=0.8,
     elitism_size=2,
     elitism=True,
-    og_matrix=False,
-    maximize=True,
-    verbose=True,
-    evaluator_shared=True):    
+    verbose=True):   
     # initialize the population
     population = initializer(population_size)
     
@@ -43,16 +40,16 @@ def ga(initializer,
     fitnesses= [evaluator(matrix, population) for ind in population]
         
     if verbose:
-     print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
+     print(f'Initial best fitness: {max(fitnesses)}') 
      print(f'Population size: {population_size}')
      print(f'Number of generations: {num_generations}')
-     print(f'Geo matrix {"(original)" if og_matrix==True else ""}: {matrix}')
+     print(f'Geo matrix: {matrix}')
     
     for generation in range(num_generations):    
      if elitism:
          # select the individuals to be carried over to the next generation
          sorted_indices = np.argsort(fitnesses)
-         sorted_indices = sorted_indices if maximize else sorted_indices[::-1]
+         sorted_indices = sorted_indices
          
          elite_indices = sorted_indices[-elitism_size:]
          
@@ -85,7 +82,7 @@ def ga(initializer,
         fitnesses = fitness_shared(fitnesses)
           
      if verbose:
-        current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
+        current_best_fitness = max(fitnesses)
         best_individual = population[np.argmax(fitnesses)]
         phenotypic_diversity = np.std(fitnesses)
         genotypic_diversity_value = genotypic_diversity(population)
@@ -100,4 +97,4 @@ def ga(initializer,
         print(f"{'-'*40}\n")
     return population[np.argmax(fitnesses)], max(fitnesses)
 
-ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation,evaluator_shared=True)
+ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation)
