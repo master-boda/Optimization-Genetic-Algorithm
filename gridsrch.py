@@ -74,7 +74,7 @@ if __name__ == '__main__':
     'elitism_size': [2, 5],
     'selection': [tournament_selection, roulette_selection, rank_selection],
     'crossover': [partially_mapped_crossover, fast_order_mapped_crossover, order_crossover, cycle_crossover],
-    'mutation': [simple_mutation, scramble_mutation],
+    'mutation': [simple_mutation, inversion_mutation, displacement_mutation],
 }
 
     perform_grid_search(param_grid, n_seeds=15)
