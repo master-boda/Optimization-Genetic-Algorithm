@@ -136,21 +136,60 @@ def genotypic_diversity(population):
 
     return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
 
-def fitness_shared(population):
-    num_individuals = len(population)
-    population_array = np.array(population)
+def fitness_shared(fitnesses):
+    """
+    Calculates the shared fitness of a population.
     
-    total_distance = np.sum([
-        np.linalg.norm(population_array[i] - population_array[j])
-        for i in range(num_individuals - 1)
-        for j in range(i + 1, num_individuals)
-    ])
+    Parameters:
+    population (list of list of str): The population of routes, where each route is a list of area initials.
+    geo_matrix (list of lists): A matrix where each list corresponds to an area and contains the Geo changes to all other areas.
     
-    normalized_distance = total_distance / (num_individuals * (num_individuals - 1) / 2)
-    shared_fitness = [
-        fitness_function(individual) / normalized_distance
-        for individual in population
-    ]
+    Returns:
+    list of float: The shared fitness for each individual in the population.
+    """
+    def euclidean_distance(ind1, ind2):
+        return np.linalg.norm(np.array(ind1) - np.array(ind2))
     
-    return shared_fitness
 
+    def calculate_average_distance(fitnesses):
+        num_individuals = len(fitnesses)
+        total_distance = 0
+        count = 0
+        for i in range(num_individuals):
+            for j in range(i + 1, num_individuals):
+                total_distance += euclidean_distance(fitnesses[i], fitnesses[j])
+                count += 1
+        return total_distance / count
+    
+    def sharing_function(distance, sigma_share= 450):
+        if distance < sigma_share:
+            return 1 - (distance / sigma_share)
+        else: 
+            return 0
+        
+    shared_fitnesses = []
+    num_individuals = len(fitnesses)
+    fitnessess_array = np.array(fitnesses)
+    for i in range(num_individuals):
+        sharing_factor = 0
+        for j in range(num_individuals):
+            if i!=j:    
+                distance = euclidean_distance(fitnessess_array[i], fitnessess_array[j])
+                sharing_factor += sharing_function(distance)
+        if sharing_factor == 0:
+            new_fitness = fitnessess_array[i]
+        else:
+            print(f'old fitness: {fitnessess_array[i]}')
+            print(f'sharing factor: {sharing_factor}')
+            print(f'new fitness: {fitnessess_array[i] / sharing_factor}')
+            new_fitness = fitnessess_array[i] / sharing_factor
+        shared_fitnesses.append(new_fitness)
+               
+            
+    return shared_fitnesses
+
+# Example usage:
+# population = [['D', 'G', 'FC'], ['G', 'FC', 'D'], ['FC', 'D', 'G']]
+# geo_matrix = [[...], [...], ...] # Replace with actual geo_matrix
+# fitnesses = fitness_shared(population, geo_matrix)
+# print("Shared Fitnesses:", fitnesses)

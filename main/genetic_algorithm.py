@@ -28,7 +28,8 @@ def ga(initializer,
     elitism=True,
     og_matrix=False,
     maximize=True,
-    verbose=True):    
+    verbose=True,
+    evaluator_shared=True):    
     # initialize the population
     population = initializer(population_size)
     
@@ -39,8 +40,8 @@ def ga(initializer,
         matrix = np.array(matrix_to_use)
             
     # compute fitness for each individual in the population
-    fitnesses = [evaluator(ind, matrix) for ind in population]
-    
+    fitnesses= [evaluator(matrix, population) for ind in population]
+        
     if verbose:
      print(f'Initial best fitness: {max(fitnesses) if maximize else min(fitnesses)}') 
      print(f'Population size: {population_size}')
@@ -80,6 +81,8 @@ def ga(initializer,
          
      population = offspring[:population_size]
      fitnesses = [evaluator(ind, matrix) for ind in population]
+     if evaluator_shared == True:
+        fitnesses = fitness_shared(fitnesses)
           
      if verbose:
         current_best_fitness = max(fitnesses) if maximize else min(fitnesses)
@@ -97,4 +100,4 @@ def ga(initializer,
         print(f"{'-'*40}\n")
     return population[np.argmax(fitnesses)], max(fitnesses)
 
-ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation)
+ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation,evaluator_shared=True)
