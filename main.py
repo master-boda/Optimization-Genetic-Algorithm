@@ -6,7 +6,7 @@ from main.genetic_algorithm import *
 from operators.selection_algorithms import *
 
 
-ga(population, fitness_function, roulette_selection, partially_mapped_crossover, simple_mutation, matrix_seed=42)
+ga(population, fitness_function, roulette_selection, partially_mapped_crossover, swap_mutation, matrix_seed=42)
 
 #ga(initializer=population,
 #   evaluator=fitness_function,

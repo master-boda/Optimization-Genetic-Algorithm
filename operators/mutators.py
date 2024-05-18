@@ -1,6 +1,6 @@
 import random
 
-def simple_mutation(individual: list, rate: float) -> list:
+def swap_mutation(individual: list, rate: float) -> list:
     """
     Apply a simple swap mutation to an individual within a genetic algorithm based on a given mutation rate.
 

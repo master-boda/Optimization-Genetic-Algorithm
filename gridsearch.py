@@ -8,7 +8,7 @@ from main.genetic_algorithm import ga
 from pop.population import population
 from operators.selection_algorithms import tournament_selection, roulette_selection, rank_selection
 from operators.crossovers import partially_mapped_crossover, fast_order_mapped_crossover, order_crossover, cycle_crossover
-from operators.mutators import simple_mutation, scramble_mutation, inversion_mutation
+from operators.mutators import *
 from utils.utils import geo_matrix_generator, fitness_function
 
 def generate_matrix_gs(seed):
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         'elitism_size': [2, 5],
         'selection': [tournament_selection, roulette_selection, rank_selection],
         'crossover': [partially_mapped_crossover, fast_order_mapped_crossover, order_crossover, cycle_crossover],
-        'mutation': [simple_mutation, scramble_mutation, inversion_mutation],
+        'mutation': [swap_mutation, displacement_mutation, inversion_mutation],
     }
 
     perform_grid_search(param_grid, n_seeds=15)
