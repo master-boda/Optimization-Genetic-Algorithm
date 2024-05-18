@@ -117,8 +117,16 @@ def ga(initializer,
           
         if verbose:
             current_best_fitness = max(fitnesses)
+            phenotypic_diversity = np.std(fitnesses)
+            genotypic_diversity_value = genotypic_diversity(population)
+            
+            print(f"{'-'*40}")
             print(f'Generation {generation} best fitness {"(lowered due to sharing)" if fitness_sharing==True and generation<49 else ""}: {current_best_fitness}')
+            print(f"{'-'*40}")
             print(f'Best individual: {population[np.argmax(fitnesses)]}')
+            print(f"Phenotypic Diversity: {phenotypic_diversity:.2f}")
+            print(f"Genotypic Diversity: {genotypic_diversity_value:.2f}")
+            print(f"{'-'*40}\n")
 
         best_individual = population[np.argmax(fitnesses)]
         routes_per_generation.append(best_individual)
