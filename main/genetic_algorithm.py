@@ -78,8 +78,6 @@ def ga(initializer,
          
      population = offspring[:population_size]
      fitnesses = [evaluator(ind, matrix) for ind in population]
-     if evaluator_shared == True:
-        fitnesses = fitness_shared(fitnesses)
           
      if verbose:
         current_best_fitness = max(fitnesses)
