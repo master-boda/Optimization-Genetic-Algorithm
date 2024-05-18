@@ -185,7 +185,49 @@ def cycle_crossover(parent1: list, parent2: list) -> tuple:
     return offspring1, offspring2
 
 
+def sequential_constructive_crossover(parent1, parent2):
+    """
+    This function performs Sequential Constructive Crossover (SCX) on two parent chromosomes 
+    and generates two offspring.
 
+    Args:
+        parent1 (list): The first parent chromosome (list representation).
+        parent2 (list): The second parent chromosome (list representation).
+
+    Returns:
+        tuple: A tuple containing two offspring chromosomes generated from SCX.
+    """
+    def generate_child(primary_parent, secondary_parent):
+        chromosome_length = len(primary_parent)
+        used_genes = set()
+        child = []
+        primary_index, secondary_index = 0, 0
+
+        for _ in range(chromosome_length):
+            # Select from primary parent
+            while primary_index < chromosome_length and primary_parent[primary_index] in used_genes:
+                primary_index += 1
+            if primary_index < chromosome_length:
+                gene = primary_parent[primary_index]
+                child.append(gene)
+                used_genes.add(gene)
+
+            # Select from secondary parent
+            while secondary_index < chromosome_length and secondary_parent[secondary_index] in used_genes:
+                secondary_index += 1
+            if secondary_index < chromosome_length and len(child) < chromosome_length:
+                gene = secondary_parent[secondary_index]
+                child.append(gene)
+                used_genes.add(gene)
+
+        return child
+
+    # Generate the first child using parent1 and parent2
+    child1 = generate_child(parent1, parent2)
+    # Generate the second child using parent2 and parent1
+    child2 = generate_child(parent2, parent1)
+
+    return child1, child2
     
 
     
