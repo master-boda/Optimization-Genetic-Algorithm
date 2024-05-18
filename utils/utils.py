@@ -115,3 +115,38 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
 
     return matrix
 
+def genotypic_diversity(population):
+    """
+    Calculates the genotypic diversity of a population by comparing the number of different positions between every pair of individuals.
+    Parameters:
+    population (list): A list of individuals in the population.
+    Returns:
+    float: The average number of different positions between individuals in the population.
+    """
+    num_individuals = len(population)
+    num_positions = len(population[0])
+    total_diff_positions = 0
+
+    for i in range(num_individuals - 1):
+        for j in range(i + 1, num_individuals):
+            total_diff_positions += sum(population[i][k] != population[j][k] for k in range(num_positions))
+
+    return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
+
+def fitness_shared(population):
+    num_individuals = len(population)
+    population_array = np.array(population)
+    
+    total_distance = np.sum([
+        np.linalg.norm(population_array[i] - population_array[j])
+        for i in range(num_individuals - 1)
+        for j in range(i + 1, num_individuals)
+    ])
+    
+    normalized_distance = total_distance / (num_individuals * (num_individuals - 1) / 2)
+    shared_fitness = [
+        fitness_function(individual) / normalized_distance
+        for individual in population
+    ]
+    
+    return shared_fitness
