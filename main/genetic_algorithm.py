@@ -32,7 +32,32 @@ def ga(initializer,
        visualize=True,
        dashboard=True,
        fitness_sharing=True):
-    
+    """
+    Runs a genetic algorithm to optimize a given problem.
+
+    Parameters:
+    - initializer (function): Function to initialize the population.
+    - evaluator (function): Function to evaluate the fitness of individuals.
+    - selection (function): Function to select individuals for crossover.
+    - crossover (function): Function to perform crossover between individuals.
+    - mutation (function): Function to mutate individuals.
+    - matrix_to_use (list of lists, optional): Predefined Geo matrix to use.
+    - matrix_seed (int, optional): Seed for Geo matrix generation.
+    - mutation_rate (float): Probability of mutation.
+    - population_size (int): Number of individuals in the population.
+    - num_generations (int): Number of generations to run the algorithm.
+    - crossover_rate (float): Probability of crossover.
+    - elitism_size (int): Number of top individuals to carry over to the next generation.
+    - elitism (bool): Whether to use elitism.
+    - verbose (bool): Whether to print verbose output.
+    - visualize (bool): Whether to visualize the routes.
+    - dashboard (bool): Whether to run the dashboard.
+    - fitness_sharing (bool): Whether to use fitness sharing.
+
+    Returns:
+    - tuple: Contains routes per generation, fitness per generation, best individual, best fitness, and Geo matrix if dashboard is True.
+    - tuple: Contains best individual and best fitness if dashboard is False.
+    """
     # Initialize the population
     population = initializer(population_size)
     
@@ -41,7 +66,7 @@ def ga(initializer,
         matrix = geo_matrix_generator(seed=matrix_seed)
     else:
         matrix = np.array(matrix_to_use)
-            
+    
     # Compute fitness for each individual in the population
     fitnesses = [evaluator(ind, matrix) for ind in population]
     
@@ -123,7 +148,7 @@ if __name__ == "__main__":
         dashboard=True
     )
 
-    if isinstance(result, tuple) and len(result) == 5: #aqui para ver se corre o dash, visto que o output só tem len 5 se o coiso tiver True
+    if isinstance(result, tuple) and len(result) == 5:
         routes, fitnesses, best_route, best_fitness, matrix = result
         # Call the dashboard function with the GA results only if dashboard=True
         run_dashboard(routes, fitnesses, best_route, matrix)

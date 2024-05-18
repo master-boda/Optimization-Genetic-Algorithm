@@ -20,6 +20,16 @@ coordinates = {
 
 # Create a Heatmap Figure Function
 def create_heatmap_figure(matrix, title):
+    """
+    Create a heatmap figure to visualize the Geo earnings/loss matrix.
+
+    Parameters:
+    matrix (list of lists): The Geo matrix representing gains/losses.
+    title (str): The title of the heatmap.
+
+    Returns:
+    go.Figure: The heatmap figure.
+    """
     heatmap = go.Heatmap(
         z=matrix,
         x=areas,
@@ -40,6 +50,17 @@ def create_heatmap_figure(matrix, title):
 
 # Function to create the route figure
 def create_route_figure(route, title, color='skyblue'):
+    """
+    Create a route figure to visualize the given route.
+
+    Parameters:
+    route (list of str): The route taken, represented by area initials.
+    title (str): The title of the route figure.
+    color (str): The color of the route line.
+
+    Returns:
+    go.Figure: The route figure.
+    """
     x = [coordinates[area][0] for area in route]
     y = [coordinates[area][1] for area in route]
     trace = go.Scatter(
@@ -61,6 +82,16 @@ def create_route_figure(route, title, color='skyblue'):
 
 # Function to create the fitness evolution figure
 def create_fitness_evolution_figure(iterations, fitness_scores):
+    """
+    Create a fitness evolution figure to visualize the fitness scores over generations.
+
+    Parameters:
+    iterations (list of int): The list of generation numbers.
+    fitness_scores (list of float): The fitness scores for each generation.
+
+    Returns:
+    go.Figure: The fitness evolution figure.
+    """
     trace = go.Scatter(
         x=iterations,
         y=fitness_scores,
@@ -77,6 +108,16 @@ def create_fitness_evolution_figure(iterations, fitness_scores):
 
 # Function to run the Dash dashboard
 def run_dashboard(routes, fitnesses, best_route, matrix):
+    """
+    Run the Dash dashboard to visualize route optimization results.
+
+    Parameters:
+    routes (list of list of str): The list of routes for each generation.
+    fitnesses (list of float): The fitness scores for each generation.
+    best_route (list of str): The best route found.
+    matrix (list of lists): The Geo matrix representing gains/losses.
+
+    """
     # Initialize Dash app
     app = dash.Dash(__name__)
 
@@ -129,6 +170,15 @@ def run_dashboard(routes, fitnesses, best_route, matrix):
         [Input('generation-slider', 'value')]
     )
     def update_route_graph(selected_generation):
+        """
+        Update the route graph based on the selected generation.
+
+        Parameters:
+        selected_generation (int): The index of the selected generation.
+
+        Returns:
+        tuple: Updated figures for the route graph, best route graph, and slider output text.
+        """
         route_figure = create_route_figure(routes[selected_generation], f'Generation {selected_generation + 1}')
         best_route_figure = create_route_figure(best_route, 'Best Route', color='limegreen')
         best_fitness_score = max(fitnesses)

@@ -1,5 +1,4 @@
 import random
-import numpy as np
 
 def generate_individual() -> list[str]:
     """
@@ -25,6 +24,7 @@ def generate_individual() -> list[str]:
     
     return route
 
+
 def generate_individual():
     """
     Generate a game route starting and ending at 'Dirtmouth' ('D') without strict sequence rules,
@@ -33,26 +33,24 @@ def generate_individual():
     Returns:
     list: A list representing a route starting and ending at 'Dirtmouth'.
     """
-    # define the areas in the game
+    # Define the areas in the game
     areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS']
 
-    # initialize the route starting at 'Dirtmouth'
+    # Initialize the route starting at 'Dirtmouth'
     route = ['D']
-    
-    # exclude 'Dirtmouth' for route generation
     possible_areas = [area for area in areas if area != 'D']
-    
-    # randomize the order of areas
+
+    # Shuffle
     random.shuffle(possible_areas)
 
-    # determine the start index for 'RG' to be placed in the second half of the route
+    # Determine the start index for 'RG' to be placed in the second half of the route and assign it randomly
     half_point = len(possible_areas) // 2
-    # choose a random index from the second half of the list
     rg_index = random.randint(half_point, len(possible_areas))
     possible_areas.insert(rg_index, 'RG')
     
+    # Extend the route with the randomized areas and end at 'Dirtmouth'
     route.extend(possible_areas)
-    route.append('D')  # end at 'Dirtmouth'
+    route.append('D')
     
     return route
 
@@ -66,7 +64,7 @@ def population(n: int) -> list[list[str]]:
     Returns:
     list: A list of generated individual game routes.
     """
-    # generate n individuals
+    # Generate n individuals
     population = [generate_individual() for _ in range(n)]
     
     return population

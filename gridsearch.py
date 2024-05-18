@@ -12,11 +12,29 @@ from operators.mutators import simple_mutation, scramble_mutation, inversion_mut
 from utils.utils import geo_matrix_generator, fitness_function
 
 def generate_matrix_gs(seed):
+    """
+    Generate a Geo matrix with a given seed.
+
+    Parameters:
+    - seed (int): The seed value for random number generation.
+
+    Returns:
+    - list of lists: The generated Geo matrix.
+    """
     np.random.seed(seed)
     matrix = geo_matrix_generator(seed=seed)
     return matrix
 
 def evaluate_combination(combo):
+    """
+    Evaluate a combination of genetic algorithm parameters using a specific seed.
+
+    Parameters:
+    - combo (tuple): A tuple containing a seed and a dictionary of parameters.
+
+    Returns:
+    - tuple: A tuple containing the parameters and the best fitness achieved.
+    """
     seed, parameters = combo
     try:
         matrix = generate_matrix_gs(seed)
@@ -27,6 +45,16 @@ def evaluate_combination(combo):
         return (parameters, float('inf'))
 
 def perform_grid_search(param_grid, n_seeds=15):
+    """
+    Perform a grid search over the specified parameter grid using multiple seeds.
+
+    Parameters:
+    - param_grid (dict): A dictionary specifying the parameter grid for the grid search.
+    - n_seeds (int): The number of seeds to use for random number generation.
+
+    Returns:
+    - None: Prints the best parameter combination and its average fitness.
+    """
     seeds = [np.random.randint(1, 10000) for _ in range(n_seeds)]
     combinations = [dict(zip(param_grid.keys(), values)) for values in itertools.product(*param_grid.values())]
     
@@ -60,10 +88,10 @@ if __name__ == '__main__':
     param_grid = {
         'initializer': [population],
         'evaluator': [fitness_function],
-        'population_size': [50,100],
-        'num_generations': [50,100],
-        'mutation_rate': [0.05,0.1],
-        'crossover_rate': [0.7,0.9],
+        'population_size': [50, 100],
+        'num_generations': [50, 100],
+        'mutation_rate': [0.05, 0.1],
+        'crossover_rate': [0.7, 0.9],
         'elitism_size': [2, 5],
         'selection': [tournament_selection, roulette_selection, rank_selection],
         'crossover': [partially_mapped_crossover, fast_order_mapped_crossover, order_crossover, cycle_crossover],

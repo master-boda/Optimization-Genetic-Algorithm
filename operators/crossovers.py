@@ -1,35 +1,53 @@
 import random
-import numpy as np
-def partially_mapped_crossover(parent1: list, parent2: list) -> tuple:
-    size = len(parent1)
-    idx1, idx2 = sorted(random.sample(range(1, size-1), 2))
-    offspring1, offspring2 = [None]*size, [None]*size
 
-    # set fixed ends
+def partially_mapped_crossover(parent1: list, parent2: list) -> tuple:
+    """
+    Perform a partially mapped crossover (PMX) between two parent sequences.
+    
+    PMX is a crossover operator used in genetic algorithms which preserves 
+    the relative ordering of elements. It is commonly used for solving 
+    combinatorial optimization problems such as the traveling salesman problem.
+
+    Args:
+        parent1 (list): The first parent sequence.
+        parent2 (list): The second parent sequence.
+
+    Returns:
+        tuple: Two offspring sequences resulting from the crossover.
+    """
+    size = len(parent1)
+    # Select two crossover points
+    idx1, idx2 = sorted(random.sample(range(1, size-1), 2))
+    offspring1, offspring2 = [None] * size, [None] * size
+
+    # Set fixed ends (usually the start and end points are not changed)
     offspring1[0], offspring1[-1] = parent1[0], parent1[-1]
     offspring2[0], offspring2[-1] = parent2[0], parent2[-1]
 
-    # copy segments between idx1 and idx2 from one parent to the other
+    # Copy segments between idx1 and idx2 from one parent to the other
     offspring1[idx1:idx2+1] = parent2[idx1:idx2+1]
     offspring2[idx1:idx2+1] = parent1[idx1:idx2+1]
 
-    # create mapping based on copied segments
+    # Create mapping based on copied segments to maintain relative ordering
     mapping1 = {parent2[i]: parent1[i] for i in range(idx1, idx2+1)}
     mapping2 = {parent1[i]: parent2[i] for i in range(idx1, idx2+1)}
 
-    # apply mappings to fill None values in the offspring arrays
+    # Function to apply mapping and fill None values in the offspring arrays
     def apply_mapping(offspring, mapping, parent):
         for i in range(1, size - 1):
             if offspring[i] is None:
                 mapped_value = parent[i]
+                # Resolve mapping conflicts until a unique value is found
                 while mapped_value in mapping:
                     mapped_value = mapping[mapped_value]
                 offspring[i] = mapped_value
 
+    # Apply mappings to complete the offspring sequences
     apply_mapping(offspring1, mapping1, parent1)
     apply_mapping(offspring2, mapping2, parent2)
     
     return offspring1, offspring2
+
 
 def fast_order_mapped_crossover(parent1: list, parent2: list) -> tuple:
     """
@@ -51,27 +69,27 @@ def fast_order_mapped_crossover(parent1: list, parent2: list) -> tuple:
     """
     size = len(parent1)
     
-    #random cut points
+    # Select two random cut points
     cutpoint1, cutpoint2 = sorted(random.sample(range(1, size-1), 2))
     
-    #  Extract segment from parent1
+    # Extract segments between the cut points from each parent
     segment1 = parent1[cutpoint1:cutpoint2+1]
     segment2 = parent2[cutpoint1:cutpoint2+1]
     
-    # initialize children
-    offspring1 = [None]*size
-    offspring2 = [None]*size
+    # Initialize offspring with None values
+    offspring1 = [None] * size
+    offspring2 = [None] * size
     
-    #Place segments in the corresponding positions
+    # Place the extracted segments into the corresponding positions in the offspring
     offspring1[cutpoint1:cutpoint2+1] = segment2
     offspring2[cutpoint1:cutpoint2+1] = segment1
     
-    # Create mappings for remaining cities
+    # Create lists of remaining areas that are not part of the copied segments
     remaining_areas1 = [area for area in parent2 if area not in segment2]
     remaining_areas2 = [area for area in parent1 if area not in segment1]
     
-    # Fill the remaining areas
-    current_pos1 = 0 
+    # Fill in the remaining areas in the offspring, preserving the order from the other parent
+    current_pos1 = 0
     current_pos2 = 0
     
     for area in remaining_areas1:
@@ -84,7 +102,7 @@ def fast_order_mapped_crossover(parent1: list, parent2: list) -> tuple:
             current_pos2 += 1
         offspring2[current_pos2] = area
     
-    return offspring1, offspring2   
+    return offspring1, offspring2  
 
 
 
@@ -161,6 +179,8 @@ def cycle_crossover(parent1: list, parent2: list) -> tuple:
     # Randomly select the starting position for the cycle
     start_pos = random.randint(0, size - 1)
     cycle = []
+    
+    # Identify the cycle starting from the randomly chosen position
     while True:
         cycle.append(start_pos)
         visited[start_pos] = True
@@ -171,6 +191,7 @@ def cycle_crossover(parent1: list, parent2: list) -> tuple:
         else:
             start_pos = next_pos
     
+    # Copy the identified cycle to the offspring
     for pos in cycle:
         offspring1[pos] = parent1[pos]
         offspring2[pos] = parent2[pos]
@@ -189,6 +210,9 @@ def sequential_constructive_crossover(parent1, parent2):
     This function performs Sequential Constructive Crossover (SCX) on two parent chromosomes 
     and generates two offspring.
 
+    SCX constructs offspring by selecting genes from both parents in a sequential manner,
+    ensuring that each gene is used only once in each offspring.
+
     Args:
         parent1 (list): The first parent chromosome (list representation).
         parent2 (list): The second parent chromosome (list representation).
@@ -197,6 +221,16 @@ def sequential_constructive_crossover(parent1, parent2):
         tuple: A tuple containing two offspring chromosomes generated from SCX.
     """
     def generate_child(primary_parent, secondary_parent):
+        """
+        Generate a single offspring by selecting genes from the primary and secondary parents.
+
+        Args:
+            primary_parent (list): The primary parent chromosome.
+            secondary_parent (list): The secondary parent chromosome.
+
+        Returns:
+            list: The generated offspring chromosome.
+        """
         chromosome_length = len(primary_parent)
         used_genes = set()
         child = []
@@ -227,6 +261,7 @@ def sequential_constructive_crossover(parent1, parent2):
     child2 = generate_child(parent2, parent1)
 
     return child1, child2
+
 
     
     

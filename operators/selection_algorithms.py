@@ -21,8 +21,13 @@ def roulette_selection(population, fitnesses):
         >>> fitnesses = [0.2, 0.5, 0.3]
         >>> selected_individual = roulette_selection(population, fitnesses)
     """
+    # Calculate the total fitness of the population
     total_fitness = sum(fitnesses)
+    
+    # Calculate the selection probabilities for each individual
     selection_probs = [f / total_fitness for f in fitnesses]
+    
+    # Select an individual based on the calculated probabilities
     return random.choices(population, weights=selection_probs)[0]
 
 def tournament_selection(population, fitnesses):
@@ -46,13 +51,17 @@ def tournament_selection(population, fitnesses):
         >>> fitnesses = [0.7, 0.4, 0.9, 0.5, 0.6, 0.8]
         >>> selected_individual = tournament_selection(population, fitnesses)
     """
+    # Randomly select a subset of individuals from the population (between 3 to 6 individuals)
     selected_individuals = random.choices(population, k=random.randint(3, 6))
-    best_individual = max(selected_individuals, key=lambda ind: fitnesses[population.index(ind)])        
+    
+    # Find the individual with the highest fitness score in the selected subset
+    best_individual = max(selected_individuals, key=lambda ind: fitnesses[population.index(ind)])
+    
     return best_individual
 
 def rank_selection(population, fitnesses):
     """
-     Selects an individual from the population using rank-based selection.
+    Selects an individual from the population using rank-based selection.
 
     Rank-based selection assigns probabilities to individuals based on their
     ranks in terms of fitness scores. Individuals with higher ranks are assigned
@@ -70,7 +79,14 @@ def rank_selection(population, fitnesses):
         >>> fitnesses = [0.7, 0.4, 0.9, 0.5, 0.6, 0.8]
         >>> selected_individual = rank_selection(population, fitnesses)
     """
+    # Rank individuals by fitness in descending order
     ranked_indices = sorted(range(len(population)), key=lambda idx: fitnesses[idx], reverse=True)
-    rank_weights = [len(population) - rank+1 for rank in range(len(population))]
-    return population[random.choices(ranked_indices, weights=rank_weights, k=1)[0]]
+    
+    # Assign weights based on ranks
+    rank_weights = [len(population) - rank for rank in range(len(population))]
+    
+    # Select an individual based on rank weights
+    selected_index = random.choices(ranked_indices, weights=rank_weights, k=1)[0]
+    
+    return population[selected_index]
 

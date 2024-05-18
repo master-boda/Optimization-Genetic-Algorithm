@@ -1,10 +1,6 @@
 import plotly.graph_objs as go
-import plotly.express as px
-
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import numpy as np
-import random
 
 def plot_best_fitness_per_generation(best_fitness_history):
     """
@@ -23,7 +19,6 @@ def plot_best_fitness_per_generation(best_fitness_history):
                       yaxis_title='Best Fitness',
                       template='plotly_white')
     fig.show()
-
 
 def plot_fitness_histogram(initial_fitnesses, final_fitnesses):
     """
@@ -47,7 +42,6 @@ def plot_fitness_histogram(initial_fitnesses, final_fitnesses):
                       template='plotly_white')
     fig.show()
 
-
 # Example data: Replace these with your actual game areas and Geo earnings/losses
 areas = ["D", "FC", "G", "QS", "QG", "CS", "KS", "RG", "DV", "SN"]
 coordinates = {
@@ -65,6 +59,18 @@ coordinates = {
 
 # Function to plot a single route with enhanced aesthetics
 def plot_route(route, ax, title, color='skyblue'):
+    """
+    Plots a single route on the given axes with enhanced aesthetics.
+
+    Parameters:
+    - route (list of str): The route to be plotted, represented by area initials.
+    - ax (matplotlib.axes._subplots.AxesSubplot): The matplotlib axes to plot on.
+    - title (str): The title of the plot.
+    - color (str): The color of the route line.
+
+    Returns:
+    - None: Displays the route on the provided axes.
+    """
     x = [coordinates[area][0] for area in route]
     y = [coordinates[area][1] for area in route]
     ax.clear()
@@ -80,9 +86,29 @@ def plot_route(route, ax, title, color='skyblue'):
 
 # Function to visualize routes over generations with enhanced aesthetics
 def visualize_routes(routes, best_route, interval=500):
+    """
+    Visualizes routes over generations with enhanced aesthetics using matplotlib animation.
+
+    Parameters:
+    - routes (list of list of str): A list of routes for each generation.
+    - best_route (list of str): The best route found.
+    - interval (int): The interval between frames in milliseconds.
+
+    Returns:
+    - None: Displays the animated visualization of routes over generations.
+    """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8))
     
     def update(num):
+        """
+        Updates the plots for each frame of the animation.
+
+        Parameters:
+        - num (int): The current frame number.
+
+        Returns:
+        - None: Updates the route plots for the current generation.
+        """
         plot_route(routes[num], ax1, f"Generation {num+1}")
         plot_route(best_route, ax2, "Best Route", color='limegreen')
     

@@ -16,11 +16,12 @@ def simple_mutation(individual: list, rate: float) -> list:
     Returns:
     list: The mutated individual, which may be unchanged if the mutation was not applied.
     """
+    # Check if mutation should be applied based on the mutation rate
     if random.random() < rate:
         size = len(individual)
         
-        # prevents mutation of Dirtmouth
-        idx1, idx2 = random.sample(range(1, size-1), 2)
+        # Select two random positions, excluding the first and last elements (Dirtmouth)
+        idx1, idx2 = random.sample(range(1, size - 1), 2)
         
         # Swap the chosen positions
         individual[idx1], individual[idx2] = individual[idx2], individual[idx1]
@@ -43,15 +44,18 @@ def inversion_mutation(individual: list, rate: float) -> list:
     Returns:
     list: The mutated individual, which may be unchanged if the mutation did not occur.
     """
+    # Check if mutation should be applied based on the mutation rate
     if random.random() < rate:
         size = len(individual)
         
-        # Choose the start and end indices of the segment to scramble, ensuring they are within bounds
-        point1, point2 = sorted(random.sample(range(1, size-1), 2))
+        # Choose the start and end indices of the segment to invert, ensuring they are within bounds
+        point1, point2 = sorted(random.sample(range(1, size - 1), 2))
         
+        # Perform the inversion on the selected segment
         individual = individual[:point1] + individual[point1:point2+1][::-1] + individual[point2+1:]
 
     return individual
+
 def inversion_mutation(individual: list, rate: float) -> list:
     """
     Perform an inversion mutation on a genetic algorithm individual with a given probability.
@@ -67,12 +71,14 @@ def inversion_mutation(individual: list, rate: float) -> list:
     Returns:
     list: The mutated individual, which may be unchanged if the mutation did not occur.
     """
+    # Check if mutation should be applied based on the mutation rate
     if random.random() < rate:
         size = len(individual)
         
-        # Choose the start and end indices of the segment to scramble, ensuring they are within bounds
-        point1, point2 = sorted(random.sample(range(1, size-1), 2))
+        # Choose the start and end indices of the segment to invert, ensuring they are within bounds
+        point1, point2 = sorted(random.sample(range(1, size - 1), 2))
         
+        # Perform the inversion on the selected segment
         individual = individual[:point1] + individual[point1:point2+1][::-1] + individual[point2+1:]
 
     return individual
@@ -95,6 +101,7 @@ def displacement_mutation(individual: list, rate: float) -> list:
     Returns:
     list: The mutated individual, which may be unchanged if the mutation was not applied.
     """
+    # Check if mutation should be applied based on the mutation rate
     if random.random() < rate:
         size = len(individual)
         

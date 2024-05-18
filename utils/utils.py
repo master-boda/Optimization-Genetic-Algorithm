@@ -1,20 +1,35 @@
 import numpy as np
 
 def check_constraints(route):
-    # length of the route ignoring Dirtmouth endpoints
+    """
+    Check if a given route satisfies certain constraints for the game.
+
+    The constraints checked are:
+    1. 'Resting Grounds' ('RG') must be in the second half of the route.
+    2. 'City of Tears' ('CS') should not appear after 'Queen's Gardens' ('QG').
+    3. The route must start and end with 'Dirtmouth' ('D').
+
+    Parameters:
+    route (list): The route to be checked, represented as a list of locations.
+
+    Returns:
+    list: A list of boolean values indicating whether each constraint is satisfied.
+    """
+    # Length of the route ignoring Dirtmouth endpoints
     route_length = len(route) - 2
     
-    # check for "RG" in the second half of the route
+    # Check for 'RG' in the second half of the route
     rg_index = route.index('RG') if 'RG' in route else -1
     constraint1 = rg_index >= len(route) // 2
 
-    # check if "CS" is not after "QG"
+    # Check if 'CS' is not after 'QG'
     constraint2 = not ('QG' in route and 'CS' in route and route.index('CS') > route.index('QG'))
 
-    # check if route starts and ends with "D"
+    # Check if route starts and ends with 'D'
     constraint3 = route[0] == "D" and route[-1] == "D"
 
     return [constraint1, constraint2, constraint3]
+
 
 def fitness_function(route, geo_matrix):
     """
@@ -36,6 +51,7 @@ def fitness_function(route, geo_matrix):
 
     area_to_index = {'D': 0, 'G': 1, 'FC': 2, 'QG': 3, 'CS': 4, 'KS': 5, 'DV': 6, 'SN': 7, 'QS': 8, 'RG': 9}
 
+    # Check route constraints
     constraints = check_constraints(route)
     num_constraints = len(constraints)
     invalid_penalty = -50 * num_constraints
@@ -49,9 +65,9 @@ def fitness_function(route, geo_matrix):
                 skip_ks = False
                 continue
 
+            # Handle special case for skipping 'KS' between 'QS' and 'DV'
             if route[i] == 'QS' and route[i + 1] == 'DV':
                 skip_ks = True
-                # Ensure there was a previous area in the route
                 if i > 0:
                     previous_area = area_to_index[route[i-1]]
                     total_geo_without_ks += geo_matrix[previous_area][to_area]
@@ -63,6 +79,7 @@ def fitness_function(route, geo_matrix):
         return max(total_geo, total_geo_without_ks)
     else:
         return invalid_penalty
+
 
 def genotypic_diversity(population):
     """
@@ -78,11 +95,15 @@ def genotypic_diversity(population):
     num_positions = len(population[0])
     total_diff_positions = 0
 
+    # Compare each pair of individuals
     for i in range(num_individuals - 1):
         for j in range(i + 1, num_individuals):
+            # Count differing positions
             total_diff_positions += sum(population[i][k] != population[j][k] for k in range(num_positions))
 
+    # Calculate average number of different positions
     return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
+
 
 def individual_genotypic_diversity(individual, population):
     """
@@ -100,9 +121,12 @@ def individual_genotypic_diversity(individual, population):
     num_positions = len(individual)
     total_diff_positions = 0
 
+    # Compare the individual with each other individual in the population
     for other_individual in population:
+        # Count differing positions
         total_diff_positions += sum(individual[k] != other_individual[k] for k in range(num_positions))
 
+    # Calculate average number of different positions
     return total_diff_positions / num_individuals
 
 def fitness_shared(population, fitnesses, sigma_share=1.0):
@@ -120,6 +144,16 @@ def fitness_shared(population, fitnesses, sigma_share=1.0):
     num_individuals = len(population)
 
     def linear_sharing_function(distance, sigma_share):
+        """
+        Linear sharing function that decreases the fitness contribution based on the normalized distance.
+
+        Parameters:
+        distance (float): The genotypic distance between two individuals.
+        sigma_share (float): The sharing threshold.
+
+        Returns:
+        float: The sharing value, which is reduced as the distance increases.
+        """
         normalized_distance = distance / sigma_share
         if normalized_distance < 1:
             return 1 - normalized_distance
@@ -147,9 +181,6 @@ def fitness_shared(population, fitnesses, sigma_share=1.0):
         if sharing_coefficients[i] == 0:
             shared_fitness = fitnesses[i]
         else:
-            #print(f'old fitness: {fitnesses[i]}')
-            #print(f'new fitness: {fitnesses[i] / (1 + sharing_coefficients[i])}')
-            #print(f'diversity: {distances[i]}')
             shared_fitness = fitnesses[i] / (1 + sharing_coefficients[i])
         shared_fitnesses.append(np.round(shared_fitness, 1))
 
@@ -159,7 +190,7 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
     """
     Creates a matrix with biased random values representing Geo gains or losses.
     Diagonal elements are set to zero, indicating no gain/loss within the same area.
-    Generate values with a 7% chance of being negative (maintaining the original matrix's ratio of negative values)
+    Generate values with a 7% chance of being negative (maintaining the original matrix's ratio of negative values).
     Enforces the value of the edge from 'Greenpath' to 'Forgotten Crossroads' to be 3.2% less than the minimum positive value.
 
     Parameters:
@@ -171,24 +202,26 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
     Returns:
         list of lists: A matrix representing the Geo matrix.
     """
-
+    
     if seed is not None:
         np.random.seed(seed)
 
+    # Initialize the matrix with zero values
     matrix = [[0] * size for _ in range(size)]
-    index_G = 1
-    index_FC = 2
+    index_G = 1  # Index for Greenpath
+    index_FC = 2  # Index for Forgotten Crossroads
     positive_values = []
 
+    # Fill the matrix with random values
     for i in range(size):
         for j in range(size):
             if i == j:
-                matrix[i][j] = 0
+                matrix[i][j] = 0  # No gain/loss within the same area
             else:
                 if i == index_G and j == index_FC:
-                    continue
+                    continue  # Skip special case to handle later
                 if np.random.rand() < 0.07:
-                    matrix[i][j] = np.random.randint(min_value, 0) if min_value < 0 else 0
+                    matrix[i][j] = np.random.randint(min_value, 0) if min_value < 0 else 0  # 7% chance for negative value
                 else:
                     value = np.random.randint(1, max_value + 1)
                     matrix[i][j] = value
@@ -205,8 +238,10 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
 def genotypic_diversity(population):
     """
     Calculates the genotypic diversity of a population by comparing the number of different positions between every pair of individuals.
+
     Parameters:
     population (list): A list of individuals in the population.
+
     Returns:
     float: The average number of different positions between individuals in the population.
     """
@@ -214,9 +249,12 @@ def genotypic_diversity(population):
     num_positions = len(population[0])
     total_diff_positions = 0
 
+    # Compare each pair of individuals
     for i in range(num_individuals - 1):
         for j in range(i + 1, num_individuals):
+            # Count differing positions
             total_diff_positions += sum(population[i][k] != population[j][k] for k in range(num_positions))
 
+    # Calculate the average number of different positions
     return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
 
