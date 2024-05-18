@@ -30,7 +30,8 @@ def ga(initializer,
        elitism=True,
        verbose=True,
        visualize=True,
-       dashboard=True):
+       dashboard=True,
+    fitness_sharing=True):
     # Initialize the population
     population = initializer(population_size)
     
@@ -82,22 +83,19 @@ def ga(initializer,
          
             offspring.extend([c1, c2])
          
-        population = offspring[:population_size]
-        fitnesses = [evaluator(ind, matrix) for ind in population]
+     population = offspring[:population_size]
+     fitnesses = [evaluator(ind, matrix) for ind in population]
+     
+     if generation < num_generations - 1 and fitness_sharing:
+         fitnesses = fitness_shared(population, fitnesses)
           
-        if verbose:
-            current_best_fitness = max(fitnesses)
-            best_individual = population[np.argmax(fitnesses)]
-            print(f"\nGeneration {generation + 1:>3}")
-            print("-" * 50)
-            print(f"{'Best Fitness:':<20} {current_best_fitness}")
-            print(f"{'Best Individual:':<20} {best_individual}")
-            print("-" * 50)
-        
-        # Store the best route and fitness of this generation
-        best_individual = population[np.argmax(fitnesses)]
-        routes_per_generation.append(best_individual)
-        fitness_per_generation.append(current_best_fitness)
+     if verbose:
+         current_best_fitness = max(fitnesses)
+         print(f'Generation {generation} best fitness {"(lowered due to sharing)" if fitness_sharing==True and generation<49 else ""}: {current_best_fitness}')
+         print(f'Best individual: {population[np.argmax(fitnesses)]}')
+    best_individual = population[np.argmax(fitnesses)]
+    routes_per_generation.append(best_individual)
+    fitness_per_generation.append(current_best_fitness)
     
     # Get the best individual and its fitness
     best_individual, best_fitness = population[np.argmax(fitnesses)], max(fitnesses)

@@ -10,7 +10,7 @@ def generate_individual() -> list[str]:
     list: A list representing a route starting and ending at 'Dirtmouth'.
     """
     # define the areas in the game
-    areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS']
+    areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG']
 
     # initialize the route starting at 'Dirtmouth'
     route = ['D']
@@ -20,12 +20,6 @@ def generate_individual() -> list[str]:
     
     random.shuffle(possible_areas)
 
-    # determine the start index for 'RG' to be placed in the second half of the route
-    half_point = len(possible_areas) // 2
-    
-    rg_index = random.randint(half_point, len(possible_areas))
-    possible_areas.insert(rg_index, 'RG')
-    
     route.extend(possible_areas)
     route.append('D') # end at 'Dirtmouth'
     
