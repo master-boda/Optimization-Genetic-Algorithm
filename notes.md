@@ -6,7 +6,9 @@
 6. Implementar diferentes mutations e selections
 7. implementar royal lineage
 
-Para 12 de maio : 
-1. 
-2. 
-4. 
+BATISTA:
+.VISUALIZATIONS:
+    .routes
+    .best route
+    .fitness evolution
+    
