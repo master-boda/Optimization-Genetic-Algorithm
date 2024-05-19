@@ -5,19 +5,22 @@ from utils.utils import *
 from main.genetic_algorithm import *
 from operators.selection_algorithms import *
 
+# insert matrix in "matrix_to_use" parameter
 
-ga(population, fitness_function, roulette_selection, partially_mapped_crossover, swap_mutation, matrix_seed=42)
-
-#ga(initializer=population,
-#   evaluator=fitness_function,
-#    selection=,
-#    crossover=,
-#    mutation=,
-#    mutation_rate=,
-#    population_size=,
-#    num_generations=,
-#    crossover_rate=,
-#    elitism_size=,
-#    elitisim=,
-#    maximize=,
-#    verbose=)
+ga(initializer=population,
+    evaluator=fitness_function,
+    selection=tournament_selection,
+    crossover=order_crossover,
+    mutation=swap_mutation,
+    mutation_rate=0.1,
+    population_size=100,
+    num_generations=50,
+    crossover_rate=0.7,
+    elitism_size=2,
+    elitism=True,
+    matrix_to_use=,
+    matrix_seed=None,
+    verbose=True,
+    visualize=True,
+    dashboard=True,
+    fitness_sharing=True)
