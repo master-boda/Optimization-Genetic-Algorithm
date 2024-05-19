@@ -15,23 +15,23 @@ from visualizations.visualization import *
 from visualizations.dashboard import *
 
 # Genetic Algorithm Function
-def ga(initializer,
-       evaluator,
-       selection,
-       crossover,
-       mutation,
-       matrix_to_use=None,
-       matrix_seed=None,
-       mutation_rate=0.05,
-       population_size=200,
-       num_generations=50,
-       crossover_rate=0.8,
-       elitism_size=2,
-       elitism=True,
-       verbose=True,
-       visualize=True,
-       dashboard=True,
-       fitness_sharing=True):
+def ga(initializer=population,
+    evaluator=fitness_function,
+    selection=tournament_selection,
+    crossover=order_crossover,
+    mutation=swap_mutation,
+    mutation_rate=0.1,
+    population_size=100,
+    num_generations=50,
+    crossover_rate=0.7,
+    elitism_size=2,
+    elitism=True,
+    matrix_to_use=None,
+    matrix_seed=None,
+    verbose=True,
+    visualize=True,
+    dashboard=True,
+    fitness_sharing=True):
     """
     Runs a genetic algorithm to optimize a given problem.
 
