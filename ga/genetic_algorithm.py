@@ -75,16 +75,16 @@ def ga(initializer=population,
             routes, fitnesses, best_route, best_fitness, matrix = result
             run_dashboard(routes, fitnesses, best_route, matrix)
     """
-    # Initialize the population
+    # initialize the population
     population = initializer(population_size)
     
-    # Select the Geo matrix to use (original=True uses the original matrix from the project instructions)
+    # select the Geo matrix to use (original=True uses the original matrix from the project instructions)
     if matrix_to_use is None:
         matrix = geo_matrix_generator(seed=matrix_seed)
     else:
         matrix = np.array(matrix_to_use)
     
-    # Compute fitness for each individual in the population
+    # compute fitness for each individual in the population
     fitness_results = [evaluator(ind, matrix) for ind in population]
     fitnesses = [result[0] for result in fitness_results]
     jumped_ks_flags = [result[1] for result in fitness_results]
@@ -99,12 +99,12 @@ def ga(initializer=population,
         print(matrix)
         print("="*50)
     
-    routes_per_generation = []  # Store routes here
-    fitness_per_generation = []  # Store fitness scores here
+    routes_per_generation = []  # store routes here
+    fitness_per_generation = []  # store fitness scores here
     
     for generation in range(num_generations):    
         if elitism:
-            # Select the individuals to be carried over to the next generation
+            # select the individuals to be carried over to the next generation
             sorted_indices = np.argsort(fitnesses)
             elite_indices = sorted_indices[-elitism_size:]
             offspring = [population[i] for i in elite_indices]
@@ -153,20 +153,20 @@ def ga(initializer=population,
         routes_per_generation.append(best_individual)
         fitness_per_generation.append(current_best_fitness)
     
-    # Get the best individual and its fitness
+    # get the best individual and its fitness
     best_individual, best_fitness = population[np.argmax(fitnesses)], max(fitnesses)
     
-    # Check if the best individual jumped KS
+    # check if the best individual jumped KS
     jumped_ks = jumped_ks_flags[np.argmax(fitnesses)]
     
-    # Print the jump status
+    # print the jump status
     if verbose:
         if jumped_ks:
             print(f"The best individual in the last generation jumped KS.")
         else:
             print(f"The best individual in the last generation did not jump KS.")
     
-    # Visualize the routes if the visualize parameter is True
+    # visualize the routes if the visualize parameter is True
     if visualize:
         visualize_routes(routes_per_generation, best_individual)
     

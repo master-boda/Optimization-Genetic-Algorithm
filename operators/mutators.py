@@ -54,14 +54,14 @@ def inversion_mutation(individual: list, rate: float) -> list:
         inversion_mutation(individual, 0.5)
         # Output: ['D', 'C', 'B', 'A', 'D']
     """
-    # Check if mutation should be applied based on the mutation rate
+    # check if mutation should be applied based on the mutation rate
     if random.random() < rate:
         size = len(individual)
         
-        # Choose the start and end indices of the segment to invert, ensuring they are within bounds
+        # choose the start and end indices of the segment to invert, ensuring they are within bounds
         point1, point2 = sorted(random.sample(range(1, size - 1), 2))
         
-        # Perform the inversion on the selected segment
+        # perform the inversion on the selected segment
         individual = individual[:point1] + individual[point1:point2+1][::-1] + individual[point2+1:]
 
     return individual
@@ -89,23 +89,23 @@ def displacement_mutation(individual: list, rate: float) -> list:
         displacement_mutation(individual, 0.5)
         # Output: ['D', 'B', 'C', 'A', 'D']
     """
-    # Check if mutation should be applied based on the mutation rate
+    # check if mutation should be applied based on the mutation rate
     if random.random() < rate:
         size = len(individual)
         
-        # Choose start and end indices for the segment to be displaced, avoiding the first and last positions
+        # choose start and end indices for the segment to be displaced, avoiding the first and last positions
         start, end = sorted(random.sample(range(1, size - 1), 2))
         
-        # Extract the segment
+        # extract the segment
         segment = individual[start:end + 1]
         
-        # Remove the segment from the original position
+        # remove the segment from the original position
         remaining_individual = individual[:start] + individual[end + 1:]
         
-        # Choose a new insertion position, avoiding the start and end of the list
+        # choose a new insertion position, avoiding the start and end of the list
         insert_position = random.choice(range(1, len(remaining_individual)))
         
-        # Reinsert the segment at the new position
+        # reinsert the segment at the new position
         individual = remaining_individual[:insert_position] + segment + remaining_individual[insert_position:]
 
     return individual

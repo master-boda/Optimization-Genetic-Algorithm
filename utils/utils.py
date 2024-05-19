@@ -21,20 +21,20 @@ def check_constraints(route):
         constraints = check_constraints(route)
         print(constraints)  # Output: [True, False, True, True]
     """
-    # Length of the route ignoring Dirtmouth endpoints
+    # length of the route ignoring Dirtmouth endpoints
     route_length = len(route) - 2
     
-    # Check for 'RG' in the second half of the route
+    # check for 'RG' in the second half of the route
     rg_index = route.index('RG') if 'RG' in route else -1
     constraint1 = rg_index >= len(route) // 2
 
-    # Check if 'CS' is not after 'QG'
+    # check if 'CS' is not after 'QG'
     constraint2 = not ('QG' in route and 'CS' in route and route.index('CS') > route.index('QG'))
 
-    # Check if route starts and ends with 'D'
+    # check if route starts and ends with 'D'
     constraint3 = route[0] == "D" and route[-1] == "D"
 
-    # Check for repeated spots except for 'D'
+    # check for repeated spots except for 'D'
     constraint4 = len(set(route[1:-1])) == route_length
 
     return [constraint1, constraint2, constraint3, constraint4]
@@ -77,7 +77,7 @@ def fitness_function(route, geo_matrix):
 
     area_to_index = {'D': 0, 'G': 1, 'FC': 2, 'QG': 3, 'CS': 4, 'KS': 5, 'DV': 6, 'SN': 7, 'QS': 8, 'RG': 9}
 
-    # Check route constraints
+    # check route constraints
     constraints = check_constraints(route)
     num_constraints = len(constraints)
     invalid_penalty = -50 * num_constraints
@@ -91,7 +91,7 @@ def fitness_function(route, geo_matrix):
                 skip_ks = False
                 continue
 
-            # Handle special case for skipping 'KS' between 'QS' and 'DV'
+            # handle special case for skipping 'KS' between 'QS' and 'DV'
             if route[i] == 'QS' and route[i + 1] == 'DV':
                 skip_ks = True
                 jumped_ks = True
@@ -130,13 +130,13 @@ def genotypic_diversity(population):
     num_positions = len(population[0])
     total_diff_positions = 0
 
-    # Compare each pair of individuals
+    # compare each pair of individuals
     for i in range(num_individuals - 1):
         for j in range(i + 1, num_individuals):
-            # Count differing positions
+            # count differing positions
             total_diff_positions += sum(population[i][k] != population[j][k] for k in range(num_positions))
 
-    # Calculate average number of different positions
+    # calculate average number of different positions
     return total_diff_positions / (num_individuals * (num_individuals - 1) / 2)
 
 
@@ -164,12 +164,12 @@ def individual_genotypic_diversity(individual, population):
     num_positions = len(individual)
     total_diff_positions = 0
 
-    # Compare the individual with each other individual in the population
+    # compare the individual with each other individual in the population
     for other_individual in population:
-        # Count differing positions
+        # count differing positions
         total_diff_positions += sum(individual[k] != other_individual[k] for k in range(num_positions))
 
-    # Calculate average number of different positions
+    # calculate average number of different positions
     return total_diff_positions / num_individuals
 
 def fitness_shared(population, fitnesses, sigma_share=1.0):
@@ -217,22 +217,23 @@ def fitness_shared(population, fitnesses, sigma_share=1.0):
         else:
             return 0
 
-    # Step 1: Calculate the genotypic diversity distances for each individual
+    # based on theoretical slides (Vanneschi)
+    # step 1: calculate the genotypic diversity distances for each individual
     distances = np.zeros(num_individuals)
     for i in range(num_individuals):
         distances[i] = individual_genotypic_diversity(population[i], population)
 
-    # Step 2: Normalize the distances by dividing by the maximum distance
+    # step 2: normalize the distances by dividing by the maximum distance
     max_distance = np.max(distances)
     if max_distance > 0:
         distances /= max_distance
 
-    # Step 3: Apply the linear sharing function to each individual's distance
+    # step 3: apply the linear sharing function to each individual's distance
     sharing_coefficients = np.zeros(num_individuals)
     for i in range(num_individuals):
         sharing_coefficients[i] = linear_sharing_function(distances[i], sigma_share)
 
-    # Step 4: Redefine the fitness
+    # step 4: redefine the fitness
     shared_fitnesses = []
     for i in range(num_individuals):
         if sharing_coefficients[i] == 0:
@@ -267,20 +268,20 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
     if seed is not None:
         np.random.seed(seed)
 
-    # Initialize the matrix with zero values
+    # initialize the matrix with zero values
     matrix = [[0] * size for _ in range(size)]
-    index_G = 1  # Index for Greenpath
-    index_FC = 2  # Index for Forgotten Crossroads
+    index_G = 1  # index for Greenpath
+    index_FC = 2  # index for Forgotten Crossroads
     positive_values = []
 
-    # Fill the matrix with random values
+    # fill the matrix with random values
     for i in range(size):
         for j in range(size):
             if i == j:
-                matrix[i][j] = 0  # No gain/loss within the same area
+                matrix[i][j] = 0  # no gain/loss within the same area
             else:
                 if i == index_G and j == index_FC:
-                    continue  # Skip special case to handle later
+                    continue  # skip special case to handle later
                 if np.random.rand() < 0.07:
                     matrix[i][j] = np.random.randint(min_value, 0) if min_value < 0 else 0  # 7% chance for negative value
                 else:
@@ -288,7 +289,7 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
                     matrix[i][j] = value
                     positive_values.append(value)
 
-    # Enforce the special rule for Greenpath to Forgotten Crossroads
+    # enforce the special rule for Greenpath to Forgotten Crossroads
     if positive_values:
         min_positive = min(positive_values)
         geo_G_to_FC = int(min_positive * 0.968)

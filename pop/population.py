@@ -45,7 +45,7 @@ def population(n: int) -> list[list[str]]:
     #          ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']
     #          ['D', 'FC', 'G', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']]
     """
-    # Generate n individuals
+    # generate n individuals
     population = [generate_individual() for _ in range(n)]
     
     return population

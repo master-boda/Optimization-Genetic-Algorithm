@@ -30,13 +30,13 @@ def two_opt(route: list[int], geo_matrix: list[list[float]], max_iterations: int
     while not improved and iteration < max_iterations:
         improved = False
         best_fit = fitness_function(best_route, geo_matrix)
-        # Keep endpoints fixed
+        # keep endpoints fixed
         for i in range(1, len(best_route) - 2):
             for j in range(i + 1, len(best_route) - 1):
                 if j - i == 1:
-                    continue  # Dont need to swap adjacent elements
+                    continue  # dont need to swap adjacent elements
                 new_route = best_route[:]
-                # Reverse the segment between i and j+1
+                # reverse the segment between i and j+1
                 new_route[i:j + 1] = reversed(new_route[i:j + 1])
                 new_fit = fitness_function(new_route, geo_matrix)
                 if new_fit > best_fit:
