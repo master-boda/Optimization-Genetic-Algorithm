@@ -94,6 +94,7 @@ pip install -r requirements.txt
 
 2. **Open the Browser**
    - Paste `http://127.0.0.1:8050` in your browser to explore the dashboard.
+   - Use CTRL + C to stop server hosting (dashboard will stop working)
 
    ```
    127.0.0.1 - - [DD/MM/YYYY hh:mm:ss] "POST /_dash-update-component HTTP/1.1" 200 - outputs this everytime tou call the @app.callback
