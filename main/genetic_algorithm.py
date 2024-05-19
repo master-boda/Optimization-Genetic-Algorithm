@@ -2,6 +2,9 @@ import sys
 import os
 import random
 import numpy as np
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from operators.selection_algorithms import *
 from operators.crossovers import *
 from operators.mutators import *
@@ -10,27 +13,26 @@ from pop.population import *
 from utils.utils import *
 from visualizations.visualization import *
 from visualizations.dashboard import *
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # Genetic Algorithm Function
 def ga(initializer=population,
-    evaluator=fitness_function,
-    selection=tournament_selection,
-    crossover=order_crossover,
-    mutation=swap_mutation,
-    mutation_rate=0.1,
-    population_size=100,
-    num_generations=50,
-    crossover_rate=0.7,
-    elitism_size=2,
-    elitism=True,
-    matrix_to_use=None,
-    matrix_seed=None,
-    verbose=True,
-    visualize=True,
-    dashboard=True,
-    fitness_sharing=True):
+       evaluator=fitness_function,
+       selection=tournament_selection,
+       crossover=order_crossover,
+       mutation=swap_mutation,
+       mutation_rate=0.1,
+       population_size=100,
+       num_generations=50,
+       crossover_rate=0.7,
+       elitism_size=2,
+       elitism=True,
+       matrix_to_use=None,
+       matrix_seed=None,
+       verbose=True,
+       visualize=True,
+       dashboard=True,
+       fitness_sharing=True):
     """
     Runs a genetic algorithm to optimize a given problem.
 
@@ -67,7 +69,9 @@ def ga(initializer=population,
         matrix = np.array(matrix_to_use)
     
     # Compute fitness for each individual in the population
-    fitnesses = [evaluator(ind, matrix) for ind in population]
+    fitness_results = [evaluator(ind, matrix) for ind in population]
+    fitnesses = [result[0] for result in fitness_results]
+    jumped_ks_flags = [result[1] for result in fitness_results]
     
     if verbose:
         print('RESULTS START')
@@ -109,7 +113,9 @@ def ga(initializer=population,
             offspring.extend([c1, c2])
          
         population = offspring[:population_size]
-        fitnesses = [evaluator(ind, matrix) for ind in population]
+        fitness_results = [evaluator(ind, matrix) for ind in population]
+        fitnesses = [result[0] for result in fitness_results]
+        jumped_ks_flags = [result[1] for result in fitness_results]
      
         if generation < num_generations - 1 and fitness_sharing:
             fitnesses = fitness_shared(population, fitnesses)
@@ -133,6 +139,16 @@ def ga(initializer=population,
     
     # Get the best individual and its fitness
     best_individual, best_fitness = population[np.argmax(fitnesses)], max(fitnesses)
+    
+    # Check if the best individual jumped KS
+    jumped_ks = jumped_ks_flags[np.argmax(fitnesses)]
+    
+    # Print the jump status
+    if verbose:
+        if jumped_ks:
+            print(f"The best individual in the last generation jumped KS.")
+        else:
+            print(f"The best individual in the last generation did not jump KS.")
     
     # Visualize the routes if the visualize parameter is True
     if visualize:
@@ -159,3 +175,4 @@ if __name__ == "__main__":
         routes, fitnesses, best_route, best_fitness, matrix = result
         # Call the dashboard function with the GA results only if dashboard=True
         run_dashboard(routes, fitnesses, best_route, matrix)
+

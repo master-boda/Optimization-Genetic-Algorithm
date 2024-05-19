@@ -47,11 +47,12 @@ def fitness_function(route, geo_matrix):
                                 the Geo changes to all other areas.
 
     Returns:
-    int: The total Geo accumulated along the route.
+    tuple: (total Geo accumulated along the route, jumped_ks flag)
     """
     total_geo = 0
     total_geo_without_ks = 0
     skip_ks = False
+    jumped_ks = False
 
     area_to_index = {'D': 0, 'G': 1, 'FC': 2, 'QG': 3, 'CS': 4, 'KS': 5, 'DV': 6, 'SN': 7, 'QS': 8, 'RG': 9}
 
@@ -72,6 +73,7 @@ def fitness_function(route, geo_matrix):
             # Handle special case for skipping 'KS' between 'QS' and 'DV'
             if route[i] == 'QS' and route[i + 1] == 'DV':
                 skip_ks = True
+                jumped_ks = True
                 if i > 0:
                     previous_area = area_to_index[route[i-1]]
                     total_geo_without_ks += geo_matrix[previous_area][to_area]
@@ -80,9 +82,10 @@ def fitness_function(route, geo_matrix):
 
             total_geo += geo_matrix[from_area][to_area]
 
-        return max(total_geo, total_geo_without_ks)
+        return max(total_geo, total_geo_without_ks), jumped_ks
     else:
-        return invalid_penalty
+        return invalid_penalty, False
+
 
 
 def genotypic_diversity(population):
