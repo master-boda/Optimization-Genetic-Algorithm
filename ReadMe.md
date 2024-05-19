@@ -42,7 +42,6 @@ This project explores and optimizes the use of Genetic Algorithms (GAs) for solv
 
 ### Other Files
 - `.gitattributes`
-- `crossovers.md`
 - `Geo_Matrix_Dataset.csv`
 - `grid_search_results.csv`
 - `gridsearch.py`
