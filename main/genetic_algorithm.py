@@ -114,12 +114,12 @@ def ga(initializer,
      
         if generation < num_generations - 1 and fitness_sharing:
             fitnesses = fitness_shared(population, fitnesses)
-          
-        if verbose:
-            current_best_fitness = max(fitnesses)
-            phenotypic_diversity = np.std(fitnesses)
-            genotypic_diversity_value = genotypic_diversity(population)
             
+        current_best_fitness = max(fitnesses)
+        phenotypic_diversity = np.std(fitnesses)
+        genotypic_diversity_value = genotypic_diversity(population)
+            
+        if verbose:
             print(f"{'-'*40}")
             print(f'Generation {generation} best fitness {"(lowered due to sharing)" if fitness_sharing==True and generation<49 else ""}: {current_best_fitness}')
             print(f"{'-'*40}")

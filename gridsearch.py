@@ -10,6 +10,7 @@ from operators.selection_algorithms import tournament_selection, roulette_select
 from operators.crossovers import partially_mapped_crossover, fast_order_mapped_crossover, order_crossover, cycle_crossover
 from operators.mutators import *
 from utils.utils import geo_matrix_generator, fitness_function
+import csv
 
 def generate_matrix_gs(seed):
     """
@@ -38,7 +39,7 @@ def evaluate_combination(combo):
     seed, parameters = combo
     try:
         matrix = generate_matrix_gs(seed)
-        best_individual, best_fitness = ga(**parameters, matrix_to_use=matrix, verbose=False)
+        best_individual, best_fitness = ga(**parameters, matrix_to_use=matrix, verbose=False, dashboard=False, visualize=False, fitness_sharing=True)
         return (parameters, best_fitness)
     except Exception as e:
         print(f"Error in combination {parameters}: {e}")
@@ -83,6 +84,13 @@ def perform_grid_search(param_grid, n_seeds=15):
         best_combo = max(average_scores, key=average_scores.get)
         print("Overall best combination:", dict(best_combo))
         print("Average fitness:", average_scores[best_combo])
+
+        # Export results to CSV file
+        with open('grid_search_results.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Parameters', 'Average Fitness'])
+            for combo, score in average_scores.items():
+                writer.writerow([str(combo), score])
 
 if __name__ == '__main__':
     param_grid = {
