@@ -107,4 +107,3 @@ pip install -r requirements.txt
 ---
 
 This project provides a comprehensive framework for optimizing routing problems using Genetic Algorithms, with a specific focus on maximizing in-game currency earnings in Hollow Knight. The integration of various genetic operators, extensive testing, and dynamic visualizations offers a robust and insightful approach to solving complex optimization problems.
-```
