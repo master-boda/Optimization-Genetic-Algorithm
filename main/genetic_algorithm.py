@@ -176,19 +176,4 @@ def ga(initializer=population,
     
     return best_individual, best_fitness
 
-# Example call to ga function with dashboard parameter
-if __name__ == "__main__":
-    result = ga(
-        population,
-        fitness_function,
-        roulette_selection,
-        order_crossover,
-        inversion_mutation,
-        dashboard=True
-    )
-
-    if isinstance(result, tuple) and len(result) == 5:
-        routes, fitnesses, best_route, best_fitness, matrix = result
-        # Call the dashboard function with the GA results only if dashboard=True
-        run_dashboard(routes, fitnesses, best_route, matrix)
 
