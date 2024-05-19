@@ -121,7 +121,7 @@ def ga(initializer=population,
             
         if verbose:
             print(f"{'-'*40}")
-            print(f'Generation {generation} best fitness {"(lowered due to sharing)" if fitness_sharing==True and generation<49 else ""}: {current_best_fitness}')
+            print(f'Generation {generation} best fitness {"(lowered due to sharing)" if fitness_sharing==True and generation<(num_generations-1) else ""}: {current_best_fitness}')
             print(f"{'-'*40}")
             print(f'Best individual: {population[np.argmax(fitnesses)]}')
             print(f"Phenotypic Diversity: {phenotypic_diversity:.2f}")
