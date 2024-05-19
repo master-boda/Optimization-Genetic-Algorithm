@@ -2,9 +2,6 @@ import sys
 import os
 import random
 import numpy as np
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from operators.selection_algorithms import *
 from operators.crossovers import *
 from operators.mutators import *
@@ -13,6 +10,8 @@ from pop.population import *
 from utils.utils import *
 from visualizations.visualization import *
 from visualizations.dashboard import *
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 # Genetic Algorithm Function
 def ga(initializer=population,
