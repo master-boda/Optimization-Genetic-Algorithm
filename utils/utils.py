@@ -8,6 +8,7 @@ def check_constraints(route):
     1. 'Resting Grounds' ('RG') must be in the second half of the route.
     2. 'City of Tears' ('CS') should not appear after 'Queen's Gardens' ('QG').
     3. The route must start and end with 'Dirtmouth' ('D').
+    4. No repeated spots are allowed in the route.
 
     Parameters:
     route (list): The route to be checked, represented as a list of locations.
@@ -28,7 +29,10 @@ def check_constraints(route):
     # Check if route starts and ends with 'D'
     constraint3 = route[0] == "D" and route[-1] == "D"
 
-    return [constraint1, constraint2, constraint3]
+    # Check for repeated spots except for 'D'
+    constraint4 = len(set(route[1:-1])) == route_length
+
+    return [constraint1, constraint2, constraint3, constraint4]
 
 
 def fitness_function(route, geo_matrix):
