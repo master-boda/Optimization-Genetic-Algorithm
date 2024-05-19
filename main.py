@@ -1,13 +1,7 @@
-from operators.crossovers import *
-from operators.mutators import *    
-from pop.population import *
-from utils.utils import *
 from main.genetic_algorithm import *
-from operators.selection_algorithms import *
-
-# insert matrix in "matrix_to_use" parameter
 
 if __name__ == "__main__":
+    #Best parameters found after grid search
     result = ga(initializer=population,
         evaluator=fitness_function,
         selection=tournament_selection,

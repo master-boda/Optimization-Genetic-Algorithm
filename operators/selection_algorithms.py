@@ -17,9 +17,9 @@ def roulette_selection(population, fitnesses):
         object: The selected individual from the population.
 
     Example:
-        >>> population = ['A', 'B', 'C']
-        >>> fitnesses = [0.2, 0.5, 0.3]
-        >>> selected_individual = roulette_selection(population, fitnesses)
+        population = ['A', 'B', 'C']
+        fitnesses = [0.2, 0.5, 0.3]
+        selected_individual = roulette_selection(population, fitnesses)
     """
     # Calculate the total fitness of the population
     total_fitness = sum(fitnesses)
@@ -47,9 +47,9 @@ def tournament_selection(population, fitnesses):
         object: The selected individual from the population.
 
     Example:
-        >>> population = ['A', 'B', 'C', 'D', 'E', 'F']
-        >>> fitnesses = [0.7, 0.4, 0.9, 0.5, 0.6, 0.8]
-        >>> selected_individual = tournament_selection(population, fitnesses)
+        population = ['A', 'B', 'C', 'D', 'E', 'F']
+        fitnesses = [0.7, 0.4, 0.9, 0.5, 0.6, 0.8]
+        selected_individual = tournament_selection(population, fitnesses)
     """
     # Randomly select a subset of individuals from the population (between 3 to 6 individuals)
     selected_individuals = random.choices(population, k=random.randint(3, 6))
@@ -75,9 +75,9 @@ def rank_selection(population, fitnesses):
         object: The selected individual from the population.
 
     Example:
-        >>> population = ['A', 'B', 'C', 'D', 'E', 'F']
-        >>> fitnesses = [0.7, 0.4, 0.9, 0.5, 0.6, 0.8]
-        >>> selected_individual = rank_selection(population, fitnesses)
+        population = ['A', 'B', 'C', 'D', 'E', 'F']
+        fitnesses = [0.7, 0.4, 0.9, 0.5, 0.6, 0.8]
+        selected_individual = rank_selection(population, fitnesses)
     """
     # Rank individuals by fitness in descending order
     ranked_indices = sorted(range(len(population)), key=lambda idx: fitnesses[idx], reverse=True)

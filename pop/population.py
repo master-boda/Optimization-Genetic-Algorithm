@@ -2,11 +2,14 @@ import random
 
 def generate_individual() -> list[str]:
     """
-    Generate a game route starting and ending at 'Dirtmouth' ('D') without strict sequence rules,
-    with 'Resting Grounds' ('RG') inserted at a random position in the second half of the route.
-    
+    Generate a game route starting and ending at 'Dirtmouth' ('D') without strict sequence rules.
+        
     Returns:
     list: A list representing a route starting and ending at 'Dirtmouth'.
+
+    Example Usage:
+    generate_individual()
+    # Output: ['D', 'FC', 'G', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']
     """
     # define the areas in the game
     areas = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG']
@@ -33,6 +36,14 @@ def population(n: int) -> list[list[str]]:
 
     Returns:
     list: A list of generated individual game routes.
+
+    Example Usage:
+    population(5)
+    # Output: [['D', 'FC', 'G', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']
+    #          ['D', 'SN', 'QS', 'FC', 'CS', 'DV', 'RG', 'G', 'QG', 'KS', 'D']
+    #          ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']
+    #          ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']
+    #          ['D', 'FC', 'G', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']]
     """
     # Generate n individuals
     population = [generate_individual() for _ in range(n)]

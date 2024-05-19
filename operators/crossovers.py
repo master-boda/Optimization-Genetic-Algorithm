@@ -4,9 +4,10 @@ def partially_mapped_crossover(parent1: list, parent2: list) -> tuple:
     """
     Perform a partially mapped crossover (PMX) between two parent sequences.
     
-    PMX is a crossover operator used in genetic algorithms which preserves 
-    the relative ordering of elements. It is commonly used for solving 
-    combinatorial optimization problems such as the traveling salesman problem.
+    PMX (Partially Mapped Crossover) is a crossover operator used in genetic algorithms that preserves
+    the relative ordering of elements. It works by selecting a random segment from one parent and mapping
+    the values to the corresponding segment in the other parent. The remaining values are then mapped based
+    on the values in the selected segment.
 
     Args:
         parent1 (list): The first parent sequence.
@@ -14,8 +15,14 @@ def partially_mapped_crossover(parent1: list, parent2: list) -> tuple:
 
     Returns:
         tuple: Two offspring sequences resulting from the crossover.
+
+    Example Usage:
+        parent1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        parent2 = [9, 3, 7, 8, 2, 6, 5, 1, 4]
+        child1, child2 = partially_mapped_crossover(parent1, parent2)
     """
     size = len(parent1)
+
     # Select two crossover points
     idx1, idx2 = sorted(random.sample(range(1, size-1), 2))
     offspring1, offspring2 = [None] * size, [None] * size
@@ -48,6 +55,59 @@ def partially_mapped_crossover(parent1: list, parent2: list) -> tuple:
     
     return offspring1, offspring2
 
+def order_crossover(parent1: list, parent2: list) -> tuple:
+    """
+    Perform an ordered crossover between two parents to generate two offspring.
+
+    The function selects a random subset from each parent and maintains the order of these elements in the respective offspring.
+    It then fills the rest of each offspring's genome with genes from the other parent in the order they appear,
+    skipping genes already included from the selected subset.
+
+    Parameters:
+        - parent1 (list): The first parent's genome.
+        - parent2 (list): The second parent's genome.
+
+    Returns:
+        - tuple of lists: A tuple containing the genomes of the two offspring resulting from the crossover.
+
+    Example Usage:
+        parent1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        parent2 = [9, 3, 7, 8, 2, 6, 5, 1, 4]
+        child1, child2 = order_crossover(parent1, parent2)
+    """
+    size = len(parent1)
+    # Generate two random crossover points
+    start, end = sorted(random.sample(range(1, size - 1), 2))
+    
+    # Initialize offspring with None placeholders
+    offspring1 = [None] * size
+    offspring2 = [None] * size
+    
+    # Include the subset from each parent into the respective offspring
+    offspring1[start:end+1] = parent2[start:end+1]
+    offspring2[start:end+1] = parent1[start:end+1]
+    
+    # Fill the remaining positions in offspring1 with the elements from parent1 in order
+    fill_pos1 = (item for item in parent1 if item not in offspring1[start:end+1])
+    index1 = 0
+    for gene in fill_pos1:
+        while offspring1[index1] is not None:
+            index1 += 1
+        if index1 < size:
+            offspring1[index1] = gene
+            index1 += 1
+    
+    # Fill the remaining positions in offspring2 with the elements from parent2 in order
+    fill_pos2 = (item for item in parent2 if item not in offspring2[start:end+1])
+    index2 = 0
+    for gene in fill_pos2:
+        while offspring2[index2] is not None:
+            index2 += 1
+        if index2 < size:
+            offspring2[index2] = gene
+            index2 += 1
+    
+    return offspring1, offspring2
 
 def fast_order_mapped_crossover(parent1: list, parent2: list) -> tuple:
     """
@@ -63,6 +123,11 @@ def fast_order_mapped_crossover(parent1: list, parent2: list) -> tuple:
 
     Returns:
         tuple: A tuple containing two genomes.
+    
+    Example Usage:
+        parent1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        parent2 = [9, 3, 7, 8, 2, 6, 5, 1, 4]
+        child1, child2 = fast_order_mapped_crossover(parent1, parent2) 
 
     Note:
         This function assumes that the parent genomes are lists of the same length and that they do not contain any None values.
@@ -105,63 +170,13 @@ def fast_order_mapped_crossover(parent1: list, parent2: list) -> tuple:
     return offspring1, offspring2  
 
 
-
-def order_crossover(parent1: list, parent2: list) -> tuple:
-    """
-    Perform an ordered crossover between two parents to generate two offspring.
-
-    The function selects a random subset from each parent and maintains the order of these elements in the respective offspring.
-    It then fills the rest of each offspring's genome with genes from the other parent in the order they appear,
-    skipping genes already included from the selected subset.
-
-    Parameters:
-    - parent1 (list): The first parent's genome.
-    - parent2 (list): The second parent's genome.
-
-    Returns:
-    - tuple of lists: A tuple containing the genomes of the two offspring resulting from the crossover.
-    """
-    size = len(parent1)
-    # Generate two random crossover points
-    start, end = sorted(random.sample(range(1, size - 1), 2))
-    
-    # Initialize offspring with None placeholders
-    offspring1 = [None] * size
-    offspring2 = [None] * size
-    
-    # Include the subset from each parent into the respective offspring
-    offspring1[start:end+1] = parent2[start:end+1]
-    offspring2[start:end+1] = parent1[start:end+1]
-    
-    # Fill the remaining positions in offspring1 with the elements from parent1 in order
-    fill_pos1 = (item for item in parent1 if item not in offspring1[start:end+1])
-    index1 = 0
-    for gene in fill_pos1:
-        while offspring1[index1] is not None:
-            index1 += 1
-        if index1 < size:
-            offspring1[index1] = gene
-            index1 += 1
-    
-    # Fill the remaining positions in offspring2 with the elements from parent2 in order
-    fill_pos2 = (item for item in parent2 if item not in offspring2[start:end+1])
-    index2 = 0
-    for gene in fill_pos2:
-        while offspring2[index2] is not None:
-            index2 += 1
-        if index2 < size:
-            offspring2[index2] = gene
-            index2 += 1
-    
-    return offspring1, offspring2
-
 def cycle_crossover(parent1: list, parent2: list) -> tuple:
     """
     Perform a cycle crossover on two parent lists to produce two offspring lists.
 
-    Cycle crossover (CX) is a crossover operator used in genetic algorithms
-    where cycles in the parent permutations are identified and copied directly
-    to the offspring.
+    Cycle crossover works by identifying a cycle of values between two parents and 
+    then alternating the values between the parents to create two offspring. The cycle
+    is identified by starting at a random position and following the mapping between the parents' values.
 
     Parameters:
     parent1 (list): The first parent permutation.
@@ -169,6 +184,12 @@ def cycle_crossover(parent1: list, parent2: list) -> tuple:
 
     Returns:
     tuple: Two offspring permutations generated from the parents.
+
+    Example Usage:
+    parent1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    parent2 = [9, 3, 7, 8, 2, 6, 5, 1, 4]
+    child1, child2 = cycle_crossover(parent1, parent2)
+    
     """
     
     size = len(parent1)

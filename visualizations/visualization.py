@@ -2,47 +2,7 @@ import plotly.graph_objs as go
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-def plot_best_fitness_per_generation(best_fitness_history):
-    """
-    Plots the best fitness value per generation as a line chart.
-
-    Parameters:
-    - best_fitness_history (list of float): A list of the best fitness values, one for each generation.
-
-    Returns:
-    - None: Displays an interactive line chart in the browser.
-    """
-    generations = list(range(len(best_fitness_history)))
-    fig = go.Figure(data=go.Scatter(x=generations, y=best_fitness_history, mode='lines+markers'))
-    fig.update_layout(title='Best Fitness per Generation',
-                      xaxis_title='Generation',
-                      yaxis_title='Best Fitness',
-                      template='plotly_white')
-    fig.show()
-
-def plot_fitness_histogram(initial_fitnesses, final_fitnesses):
-    """
-    Plots histograms for the initial and final fitness distributions of a population.
-
-    Parameters:
-    - initial_fitnesses (list of float): Fitness values of the initial population.
-    - final_fitnesses (list of float): Fitness values of the final population after running the genetic algorithm.
-
-    Returns:
-    - None: Displays an interactive histogram comparison in the browser.
-    """
-    fig = go.Figure()
-    fig.add_trace(go.Histogram(x=initial_fitnesses, name='Initial', opacity=0.75))
-    fig.add_trace(go.Histogram(x=final_fitnesses, name='Final', opacity=0.75))
-
-    fig.update_layout(title='Initial vs Final Fitness Distribution',
-                      xaxis_title='Fitness',
-                      yaxis_title='Count',
-                      barmode='overlay',
-                      template='plotly_white')
-    fig.show()
-
-# Example data: Replace these with your actual game areas and Geo earnings/losses
+# Define the areas and their coordinates
 areas = ["D", "FC", "G", "QS", "QG", "CS", "KS", "RG", "DV", "SN"]
 coordinates = {
     "D": (0, 0),
@@ -57,19 +17,71 @@ coordinates = {
     "SN": (8, 5)
 }
 
-# Function to plot a single route with enhanced aesthetics
+def plot_best_fitness_per_generation(best_fitness_history):
+    """
+    Plots the best fitness value per generation as a line chart.
+
+    Parameters:
+        - best_fitness_history (list of float): A list of the best fitness values, one for each generation.
+
+    Returns:
+        - None: Displays an interactive line chart in the browser.
+
+    Example Usage:
+        best_fitness_history = [10, 20, 30, 40, 50]
+        plot_best_fitness_per_generation(best_fitness_history)
+
+    """
+    generations = list(range(len(best_fitness_history)))
+    fig = go.Figure(data=go.Scatter(x=generations, y=best_fitness_history, mode='lines+markers'))
+    fig.update_layout(title='Best Fitness per Generation',
+                      xaxis_title='Generation',
+                      yaxis_title='Best Fitness',
+                      template='plotly_white')
+    fig.show()
+
+def plot_fitness_histogram(initial_fitnesses, final_fitnesses):
+    """
+    Plots histograms for the initial and final fitness distributions of a population.
+
+    Parameters:
+        - initial_fitnesses (list of float): Fitness values of the initial population.
+        - final_fitnesses (list of float): Fitness values of the final population after running the genetic algorithm.
+
+    Returns:
+        - None: Displays an interactive histogram comparison in the browser.
+
+    Example Usage:
+        initial_fitnesses = [10, 20, 30, 40, 50]
+        final_fitnesses = [15, 25, 35, 45, 55]
+        plot_fitness_histogram(initial_fitnesses, final_fitnesses)
+
+    """
+    fig = go.Figure()
+    fig.add_trace(go.Histogram(x=initial_fitnesses, name='Initial', opacity=0.75))
+    fig.add_trace(go.Histogram(x=final_fitnesses, name='Final', opacity=0.75))
+    fig.update_layout(title='Initial vs Final Fitness Distribution',
+                      xaxis_title='Fitness',
+                      yaxis_title='Count',
+                      barmode='overlay',
+                      template='plotly_white')
+    fig.show()
+
 def plot_route(route, ax, title, color='skyblue'):
     """
     Plots a single route on the given axes with enhanced aesthetics.
 
     Parameters:
-    - route (list of str): The route to be plotted, represented by area initials.
-    - ax (matplotlib.axes._subplots.AxesSubplot): The matplotlib axes to plot on.
-    - title (str): The title of the plot.
-    - color (str): The color of the route line.
+        - route (list of str): The route to be plotted, represented by area initials.
+        - ax (matplotlib.axes._subplots.AxesSubplot): The matplotlib axes to plot on.
+        - title (str): The title of the plot.
+        - color (str): The color of the route line.
 
     Returns:
-    - None: Displays the route on the provided axes.
+        - None: Displays the route on the provided axes.
+    Example Usage:
+        route = ['D', 'FC', 'G', 'QS', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN']
+        plot_route(route, ax, 'Best Route', color='limegreen')
     """
     x = [coordinates[area][0] for area in route]
     y = [coordinates[area][1] for area in route]
@@ -84,18 +96,21 @@ def plot_route(route, ax, title, color='skyblue'):
     ax.set_xlim(-1, 10)
     ax.set_ylim(-1, 8)
 
-# Function to visualize routes over generations with enhanced aesthetics
 def visualize_routes(routes, best_route, interval=500):
     """
     Visualizes routes over generations with enhanced aesthetics using matplotlib animation.
 
     Parameters:
-    - routes (list of list of str): A list of routes for each generation.
-    - best_route (list of str): The best route found.
-    - interval (int): The interval between frames in milliseconds.
+        - routes (list of list of str): A list of routes for each generation.
+        - best_route (list of str): The best route found.
+        - interval (int): The interval between frames in milliseconds.
 
     Returns:
-    - None: Displays the animated visualization of routes over generations.
+        - None: Displays the animated visualization of routes over generations.
+
+    Example Usage:
+        visualize_routes(routes, best_route, interval=500)
+
     """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8))
     
@@ -104,10 +119,14 @@ def visualize_routes(routes, best_route, interval=500):
         Updates the plots for each frame of the animation.
 
         Parameters:
-        - num (int): The current frame number.
+            - num (int): The current frame number.
 
         Returns:
-        - None: Updates the route plots for the current generation.
+            - None: Updates the route plots for the current generation.
+
+        Example Usage:
+            update(1)      
+
         """
         plot_route(routes[num], ax1, f"Generation {num+1}")
         plot_route(best_route, ax2, "Best Route", color='limegreen')
