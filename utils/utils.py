@@ -5,16 +5,21 @@ def check_constraints(route):
     Check if a given route satisfies certain constraints for the game.
 
     The constraints checked are:
-    1. 'Resting Grounds' ('RG') must be in the second half of the route.
-    2. 'City of Tears' ('CS') should not appear after 'Queen's Gardens' ('QG').
-    3. The route must start and end with 'Dirtmouth' ('D').
-    4. No repeated spots are allowed in the route.
+        1. 'Resting Grounds' ('RG') must be in the second half of the route.
+        2. 'City of Tears' ('CS') should not appear after 'Queen's Gardens' ('QG').
+        3. The route must start and end with 'Dirtmouth' ('D').
+        4. No repeated spots are allowed in the route.
 
     Parameters:
-    route (list): The route to be checked, represented as a list of locations.
+        route (list): The route to be checked, represented as a list of locations.
 
     Returns:
-    list: A list of boolean values indicating whether each constraint is satisfied.
+        list: A list of boolean values indicating whether each constraint is satisfied.
+
+    Example usage:
+        route = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']
+        constraints = check_constraints(route)
+        print(constraints)  # Output: [True, False, True, True]
     """
     # Length of the route ignoring Dirtmouth endpoints
     route_length = len(route) - 2
@@ -42,12 +47,28 @@ def fitness_function(route, geo_matrix):
     Geo values are obtained from a geo_matrix which is a list of lists.
 
     Parameters:
-    route (list of str): The route taken, represented by area initials.
-    geo_matrix (list of lists): A matrix where each list corresponds to an area and contains
+        route (list of str): The route taken, represented by area initials.
+        geo_matrix (list of lists): A matrix where each list corresponds to an area and contains
                                 the Geo changes to all other areas.
 
     Returns:
     tuple: (total Geo accumulated along the route, jumped_ks flag)
+        int: The total Geo accumulated along the route.
+
+    Example Usage:
+        route = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']
+        geo_matrix = [[0, 10, -20, 30, -40, 50, -60, 70, -80, 90],
+                     [-10, 0, -15, 25, -35, 45, -55, 65, -75, 85],
+                     [20, 15, 0, 35, -45, 55, -65, 75, -85, 95],
+                     [-30, -25, -35, 0, 40, -50, 60, -70, 80, -90],
+                     [40, 35, 45, -40, 0, -60, 70, -80, 90, -100],
+                     [-50, -45, -55, 50, 60, 0, -70, 80, -90, 100],
+                     [60, 55, 65, -60, -70, 70, 0, -90, 100, -110],
+                     [-70, -65, -75, 70, 80, -80, 90, 0, -110, 120],
+                     [80, 75, 85, -80, -90, 90, -100, 110, 0, -120],
+                     [-90, -85, -95, 90, 100, -100, 110, -120, 120, 0]]
+        fitness = fitness_function(route, geo_matrix)
+        print(fitness)  # Output: 90
     """
     total_geo = 0
     total_geo_without_ks = 0
@@ -93,10 +114,17 @@ def genotypic_diversity(population):
     Calculates the genotypic diversity of a population by comparing the number of different positions between every pair of individuals.
     
     Parameters:
-    population (list): A list of individuals in the population.
+        population (list): A list of individuals in the population.
     
     Returns:
-    float: The average number of different positions between individuals in the population.
+        float: The average number of different positions between individuals in the population.
+
+    Example Usage:
+        population = [['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D'],
+                     ['D', 'SN', 'QS', 'FC', 'CS', 'DV', 'RG', 'G', 'QG', 'KS', 'D'],
+                     ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']]
+        diversity = genotypic_diversity(population)
+        print(diversity)  # Output: 0.8181818181818182
     """
     num_individuals = len(population)
     num_positions = len(population[0])
@@ -118,11 +146,19 @@ def individual_genotypic_diversity(individual, population):
     between the individual and every other individual in the population.
 
     Parameters:
-    individual (list): The individual for which the genotypic diversity is to be calculated.
-    population (list): A list of individuals in the population.
+        individual (list): The individual for which the genotypic diversity is to be calculated.
+        population (list): A list of individuals in the population.
 
     Returns:
-    float: The average number of different positions between the individual and the rest of the population.
+        float: The average number of different positions between the individual and the rest of the population.
+
+    Example Usage:
+        population = [['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D'],
+                     ['D', 'SN', 'QS', 'FC', 'CS', 'DV', 'RG', 'G', 'QG', 'KS', 'D'],
+                     ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']]
+        individual = ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']
+        diversity = individual_genotypic_diversity(individual, population)
+        print(diversity)  # Output: 0.8181818181818182
     """
     num_individuals = len(population)
     num_positions = len(individual)
@@ -141,12 +177,20 @@ def fitness_shared(population, fitnesses, sigma_share=1.0):
     Calculates the shared fitness of a population based on genotypic diversity.
 
     Parameters:
-    population (list of list of str): The population of routes, where each route is a list of area initials.
-    fitnesses (list of float): The fitness values of the population.
-    sigma_share (float): The sharing threshold, which normalizes distances and controls the influence range.
+        population (list of list of str): The population of routes, where each route is a list of area initials.
+        fitnesses (list of float): The fitness values of the population.
+        sigma_share (float): The sharing threshold, which normalizes distances and controls the influence range.
 
     Returns:
-    list of float: The shared fitness for each individual in the population.
+        list of float: The shared fitness for each individual in the population.
+
+    Example Usage:
+        population = [['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D'],
+                     ['D', 'SN', 'QS', 'FC', 'CS', 'DV', 'RG', 'G', 'QG', 'KS', 'D'],
+                     ['D', 'G', 'FC', 'QG', 'CS', 'KS', 'DV', 'SN', 'QS', 'RG', 'D']]
+        fitnesses = [90, 85, 80]
+        shared_fitnesses = fitness_shared(population, fitnesses, sigma_share=1.0)
+        print(shared_fitnesses)  # Output: [90.0, 85.0, 80.0]
     """
     num_individuals = len(population)
 
@@ -155,11 +199,17 @@ def fitness_shared(population, fitnesses, sigma_share=1.0):
         Linear sharing function that decreases the fitness contribution based on the normalized distance.
 
         Parameters:
-        distance (float): The genotypic distance between two individuals.
-        sigma_share (float): The sharing threshold.
+            distance (float): The genotypic distance between two individuals.
+            sigma_share (float): The sharing threshold.
 
         Returns:
-        float: The sharing value, which is reduced as the distance increases.
+            float: The sharing value, which is reduced as the distance increases.
+
+        Example Usage:
+            distance = 0.5
+            sigma_share = 1.0
+            sharing_value = linear_sharing_function(distance, sigma_share)
+            print(sharing_value)
         """
         normalized_distance = distance / sigma_share
         if normalized_distance < 1:
@@ -208,6 +258,10 @@ def geo_matrix_generator(min_value: int = -500, max_value: int = 500, size: int 
 
     Returns:
         list of lists: A matrix representing the Geo matrix.
+
+    Example Usage:
+        matrix = geo_matrix_generator(min_value=-100, max_value=100, size=10, seed=0)
+        print(matrix)
     """
     
     if seed is not None:

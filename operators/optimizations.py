@@ -1,8 +1,8 @@
 import sys
 import os
+from utils.utils import fitness_function
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.utils import fitness_function
 
 def two_opt(route: list[int], geo_matrix: list[list[float]], max_iterations: int = 5) -> list[int]:
     """
@@ -17,6 +17,11 @@ def two_opt(route: list[int], geo_matrix: list[list[float]], max_iterations: int
 
     Returns:
     - List[int]: The optimized route, potentially improved from the initial route if better configurations are found.
+
+    Example Usage:
+        route = [0, 1, 2, 3, 0]
+        geo_matrix = [[0, 10, 15, 20], [10, 0, 35, 25], [15, 35, 0, 30], [20, 25, 30, 0]]
+        optimized_route = two_opt(route, geo_matrix, max_iterations=5)
     """
     best_route = route[:]
     improved = False

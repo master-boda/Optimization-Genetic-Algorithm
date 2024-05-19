@@ -15,6 +15,11 @@ def swap_mutation(individual: list, rate: float) -> list:
 
     Returns:
     list: The mutated individual, which may be unchanged if the mutation was not applied.
+
+    Example Usage:
+        individual = ['D', 'A', 'B', 'C', 'D']
+        swap_mutation(individual, 0.5)
+        # Output: ['D', 'A', 'C', 'B', 'D']
     """
     # Check if mutation should be applied based on the mutation rate
     if random.random() < rate:
@@ -36,13 +41,18 @@ def inversion_mutation(individual: list, rate: float) -> list:
     This mutation randomly selects a contiguous segment of the individual (excluding the 
     first and last elements, which are fixed as 'D') and reverses the order of the elements 
     within this segment. This introduces variability while maintaining the start and end points.
-
+    
     Parameters:
-    individual (list): The individual to mutate. It must start and end with 'D'.
-    rate (float): The probability of the mutation being applied to the individual.
+        individual (list): The individual to mutate. It must start and end with 'D'.
+        rate (float): The probability of the mutation being applied to the individual.
 
     Returns:
-    list: The mutated individual, which may be unchanged if the mutation did not occur.
+        list: The mutated individual, which may be unchanged if the mutation did not occur.
+
+    Example Usage:
+        individual = ['D', 'A', 'B', 'C', 'D']
+        inversion_mutation(individual, 0.5)
+        # Output: ['D', 'C', 'B', 'A', 'D']
     """
     # Check if mutation should be applied based on the mutation rate
     if random.random() < rate:
@@ -67,12 +77,17 @@ def displacement_mutation(individual: list, rate: float) -> list:
     of the displaced segment.
 
     Parameters:
-    individual (list): The individual to mutate, represented as a list of locations, where the
-                       first and last elements are 'D', representing Dirtmouth.
-    rate (float): The probability that the mutation will be applied to the individual.
+        individual (list): The individual to mutate, represented as a list of locations, where the
+                           first and last elements are 'D', representing Dirtmouth.
+        rate (float): The probability that the mutation will be applied to the individual.
 
     Returns:
-    list: The mutated individual, which may be unchanged if the mutation was not applied.
+        list: The mutated individual, which may be unchanged if the mutation was not applied.
+
+    Example Usage:
+        individual = ['D', 'A', 'B', 'C', 'D']
+        displacement_mutation(individual, 0.5)
+        # Output: ['D', 'B', 'C', 'A', 'D']
     """
     # Check if mutation should be applied based on the mutation rate
     if random.random() < rate:

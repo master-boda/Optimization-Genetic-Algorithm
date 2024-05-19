@@ -15,7 +15,6 @@ from visualizations.visualization import *
 from visualizations.dashboard import *
 
 
-# Genetic Algorithm Function
 def ga(initializer=population,
        evaluator=fitness_function,
        selection=tournament_selection,
@@ -34,7 +33,10 @@ def ga(initializer=population,
        dashboard=True,
        fitness_sharing=True):
     """
-    Runs a genetic algorithm to optimize a given problem.
+    This algorithm simulates natural selection by evolving a population of candidate solutions
+    through selection, crossover, and mutation. Over successive generations, it selects the fittest
+    individuals, combines them to produce offspring, and introduces mutations to maintain diversity,
+    aiming to find the best solution.
 
     Parameters:
     - initializer (function): Function to initialize the population.
@@ -58,6 +60,20 @@ def ga(initializer=population,
     Returns:
     - tuple: Contains routes per generation, fitness per generation, best individual, best fitness, and Geo matrix if dashboard is True.
     - tuple: Contains best individual and best fitness if dashboard is False.
+
+    Example Usage: 
+    if __name__ == "__main__":
+        result = ga(
+            population,
+            fitness_function,
+            roulette_selection,
+            order_crossover,
+            inversion_mutation,
+            dashboard=True)
+
+        if isinstance(result, tuple) and len(result) == 5: #to generate dashboard
+            routes, fitnesses, best_route, best_fitness, matrix = result
+            run_dashboard(routes, fitnesses, best_route, matrix)
     """
     # Initialize the population
     population = initializer(population_size)

@@ -3,6 +3,7 @@ from main.genetic_algorithm import *
 # insert matrix in "matrix_to_use" parameter
 
 if __name__ == "__main__":
+    #Best parameters found after grid search
     result = ga(initializer=population,
         evaluator=fitness_function,
         selection=tournament_selection,

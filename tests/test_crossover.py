@@ -1,13 +1,20 @@
 import sys
 import os
-import random
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from pop.population import generate_individual
 from operators.crossovers import *
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 def test_crossover(crossover, verbose=False):
+    '''
+    Parameters:
+        - crossover (function): The crossover function to test.
+        - verbose (bool): Whether to print output.
+
+    Example Usage:
+        test_crossover(order_crossover, verbose=True)
+    '''
+
     for i in range(50):
         parent1 = generate_individual()
         parent2 = generate_individual()
@@ -26,6 +33,4 @@ def test_crossover(crossover, verbose=False):
         else:
             if i == 49:
                 print(f"Test passed for iteration {i+1}")
-
-test_crossover(cycle_crossover, verbose=True)
 

@@ -4,10 +4,10 @@ from multiprocessing import Pool, Manager
 from tqdm import tqdm
 from main.genetic_algorithm import ga
 from pop.population import population
-from operators.selection_algorithms import tournament_selection, roulette_selection, rank_selection
-from operators.crossovers import partially_mapped_crossover, fast_order_mapped_crossover, order_crossover, cycle_crossover
+from operators.selection_algorithms import *
+from operators.crossovers import *
 from operators.mutators import *
-from utils.utils import geo_matrix_generator, fitness_function
+from utils.utils import *
 import csv
 
 def generate_matrix_gs(seed):
@@ -15,10 +15,13 @@ def generate_matrix_gs(seed):
     Generate a Geo matrix with a given seed.
 
     Parameters:
-    - seed (int): The seed value for random number generation.
+        - seed (int): The seed value for random number generation.
 
     Returns:
-    - list of lists: The generated Geo matrix.
+        - list of lists: The generated Geo matrix.
+
+    Example Usage:
+        matrix = generate_matrix_gs(42)
     """
     np.random.seed(seed)
     matrix = geo_matrix_generator(seed=seed)
@@ -29,10 +32,14 @@ def evaluate_combination(combo):
     Evaluate a combination of genetic algorithm parameters using a specific seed.
 
     Parameters:
-    - combo (tuple): A tuple containing a seed and a dictionary of parameters.
+        - combo (tuple): A tuple containing a seed and a dictionary of parameters.
 
     Returns:
-    - tuple: A tuple containing the parameters and the best fitness achieved.
+        - tuple: A tuple containing the parameters and the best fitness achieved.
+    
+    Example Usage:
+        combo = (42, {'population_size': 50, 'num_generations': 50, 'mutation_rate': 0.05})
+        evaluate_combination(combo)
     """
     seed, parameters = combo
     try:
@@ -48,11 +55,19 @@ def perform_grid_search(param_grid, n_seeds=15):
     Perform a grid search over the specified parameter grid using multiple seeds.
 
     Parameters:
-    - param_grid (dict): A dictionary specifying the parameter grid for the grid search.
-    - n_seeds (int): The number of seeds to use for random number generation.
+        - param_grid (dict): A dictionary specifying the parameter grid for the grid search.
+        - n_seeds (int): The number of seeds to use for random number generation.
 
     Returns:
-    - None: Prints the best parameter combination and its average fitness.
+        - None: Prints the best parameter combination and its average fitness.
+
+    Example Usage:
+        param_grid = {
+            'population_size': [50, 100],
+            'num_generations': [50, 100],
+            'mutation_rate': [0.05, 0.1],
+        }
+        perform_grid_search(param_grid, n_seeds=15)
     """
     seeds = [np.random.randint(1, 10000) for _ in range(n_seeds)]
     combinations = [dict(zip(param_grid.keys(), values)) for values in itertools.product(*param_grid.values())]
@@ -91,6 +106,7 @@ def perform_grid_search(param_grid, n_seeds=15):
                 writer.writerow([str(combo), score])
 
 if __name__ == '__main__':
+    # Define the parameter grid for the grid search
     param_grid = {
         'initializer': [population],
         'evaluator': [fitness_function],

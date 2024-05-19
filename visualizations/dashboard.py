@@ -18,17 +18,27 @@ coordinates = {
     "SN": (8, 5)
 }
 
-# Create a Heatmap Figure Function
 def create_heatmap_figure(matrix, title):
     """
     Create a heatmap figure to visualize the Geo earnings/loss matrix.
 
     Parameters:
-    matrix (list of lists): The Geo matrix representing gains/losses.
-    title (str): The title of the heatmap.
+        matrix (list of lists): The Geo matrix representing gains/losses.
+        title (str): The title of the heatmap.
 
     Returns:
-    go.Figure: The heatmap figure.
+        The heatmap figure.
+
+    Example Usage:
+        matrix = [
+        [0, 1, 2, 3, 4],
+        [1, 0, 1, 2, 3],
+        [2, 1, 0, 1, 2],
+        [3, 2, 1, 0, 1],
+        [4, 3, 2, 1, 0]
+        ]
+        create_heatmap_figure(matrix, 'Geo Earnings/Loss Matrix')
+
     """
     heatmap = go.Heatmap(
         z=matrix,
@@ -48,18 +58,23 @@ def create_heatmap_figure(matrix, title):
     )
     return go.Figure(data=[heatmap], layout=layout)
 
-# Function to create the route figure
+
 def create_route_figure(route, title, color='skyblue'):
     """
     Create a route figure to visualize the given route.
 
     Parameters:
-    route (list of str): The route taken, represented by area initials.
-    title (str): The title of the route figure.
-    color (str): The color of the route line.
+        route (list of str): The route taken, represented by area initials.
+        title (str): The title of the route figure.
+        color (str): The color of the route line.
 
     Returns:
-    go.Figure: The route figure.
+        The route figure.
+    
+    Example Usage:
+        route = ['D', 'FC', 'G', 'QS', 'QG', 'CS', 'KS', 'RG', 'DV', 'SN']
+        create_route_figure(route, 'Best Route', color='limegreen')
+
     """
     x = [coordinates[area][0] for area in route]
     y = [coordinates[area][1] for area in route]
@@ -80,17 +95,23 @@ def create_route_figure(route, title, color='skyblue'):
     )
     return go.Figure(data=[trace], layout=layout)
 
-# Function to create the fitness evolution figure
+
 def create_fitness_evolution_figure(iterations, fitness_scores):
     """
     Create a fitness evolution figure to visualize the fitness scores over generations.
 
     Parameters:
-    iterations (list of int): The list of generation numbers.
-    fitness_scores (list of float): The fitness scores for each generation.
+        iterations (list of int): The list of generation numbers.
+        fitness_scores (list of float): The fitness scores for each generation.
 
     Returns:
-    go.Figure: The fitness evolution figure.
+        The fitness evolution figure.
+
+    Example Usage:
+        iterations = [0, 1, 2, 3, 4]
+        fitness_scores = [10, 20, 30, 40, 50]
+        create_fitness_evolution_figure(iterations, fitness_scores)
+
     """
     trace = go.Scatter(
         x=iterations,
@@ -106,17 +127,19 @@ def create_fitness_evolution_figure(iterations, fitness_scores):
     )
     return go.Figure(data=[trace], layout=layout)
 
-# Function to run the Dash dashboard
+
 def run_dashboard(routes, fitnesses, best_route, matrix):
     """
     Run the Dash dashboard to visualize route optimization results.
 
     Parameters:
-    routes (list of list of str): The list of routes for each generation.
-    fitnesses (list of float): The fitness scores for each generation.
-    best_route (list of str): The best route found.
-    matrix (list of lists): The Geo matrix representing gains/losses.
+        routes (list of list of str): The list of routes for each generation.
+        fitnesses (list of float): The fitness scores for each generation.
+        best_route (list of str): The best route found.
+        matrix (list of lists): The Geo matrix representing gains/losses.
 
+    Example Usage:
+        run_dashboard(routes, fitnesses, best_route, matrix)
     """
     # Initialize Dash app
     app = dash.Dash(__name__)
@@ -169,6 +192,7 @@ def run_dashboard(routes, fitnesses, best_route, matrix):
         [Output('route-graph', 'figure'), Output('best-route-graph', 'figure'), Output('slider-output', 'children')],
         [Input('generation-slider', 'value')]
     )
+
     def update_route_graph(selected_generation):
         """
         Update the route graph based on the selected generation.
@@ -187,6 +211,3 @@ def run_dashboard(routes, fitnesses, best_route, matrix):
     # Run the app
     app.run_server(debug=False)
 
-# Example usage:
-# if __name__ == '__main__':
-#     run_dashboard(routes, fitnesses, best_route, matrix)
