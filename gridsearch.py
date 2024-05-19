@@ -1,6 +1,4 @@
 import numpy as np
-import sys
-import os
 import itertools
 from multiprocessing import Pool, Manager
 from tqdm import tqdm
